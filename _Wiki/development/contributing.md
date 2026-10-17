@@ -6,31 +6,30 @@ updated: 2026-10-17
 
 # Contributing and development setup
 
-Read [current state](../current-state.md), [API contracts](../engineering/contracts.md), [scope](../product/scope.md), and [questions](../open-questions.md). Shared policy is [AGENTS.md](../../AGENTS.md); also read scoped backend instructions before editing backend files.
+Read [current state](../current-state.md), [contracts](../engineering/contracts.md), [questions](../open-questions.md) and [AGENTS](../../AGENTS.md). Baseline b6d984e; [audit ledger](repository-audit.md) records what was actually checked. Scoped backend instructions supplement shared policy; specs are protected from executor edits and do not constitute current completion status.
 
-## Current repository layout
+## Repository layout
 
-| Path | Actual content |
+| Path | Current role |
 | --- | --- |
-| lib/main.dart, lib/app.dart | App bootstrap and sign-in/profile/onboarding/upload gates |
-| lib/core/ | Auth, network/mock adapter, API URL settings, formatting/theme/widgets |
-| lib/features/ | Account/categories/expense models and repositories; onboarding, upload, read-only detail and settings screens |
-| test/api_test.dart, test/app_flow_test.dart | API/model/scripted-adapter tests and mocked widget flows; old counter test removed |
-| backend/app/ | FastAPI core, user models, repository/service and health/me routers |
-| backend/tests/ | Auth, profile/idempotent creation/concurrency/isolation, errors and health tests |
-| backend/environment.yml, backend/pyproject.toml | Conda Python 3.12 dependencies; Ruff/pytest configuration |
-| backend/firebase.json, firestore.rules/indexes | Local emulators, client deny-all rules and current empty indexes |
-| backend/Dockerfile, .github/workflows/ci.yml | Container and backend emulator CI definitions |
-| docs/frontend-handoff.md, backend/specs/ | API handoff copies and backend target slices; frontend copy additionally specifies English UI/gallery-only |
-| _Wiki/ | Shared synthesis, preserved raw sources, decisions/lessons, maintenance and work registers |
+| lib/main.dart, lib/app.dart | Conditional Firebase bootstrap, preferences/Riverpod, auth/profile/onboarding/home/lifecycle |
+| lib/core | Fake/Firebase auth, token retry, Dio/mock adapter, API URL preferences, formatting/theme/status |
+| lib/features | Account/categories/expense models/repositories; sign-in/onboarding/gallery upload/read-only detail/settings |
+| test |18 API/model/mock and7 widget declarations, no real backend/platform integration |
+| android and other platform folders | Android target plus generated iOS/web/Linux/macOS/Windows runners; generated presence is not supported-product proof |
+| backend/app | Layered FastAPI core/models/routers/services/repositories plus imaging/llm; all handoff domains |
+| backend/tests |72 functions before parametrization; emulator safety fixture; mocked Gemini; ten synthetic text eval cases |
+| backend/environment.yml, pyproject.toml | Conda Python 3.12, unpinned pip packages, Ruff/pytest settings |
+| backend/openapi.json, scripts/export_openapi.py | Committed machine-readable contract and runtime export script |
+| backend/firebase.json, firestore.rules/indexes | Auth9099/Firestore8080 emulators; deny-all clients; four expense indexes |
+| backend/Dockerfile, deploy/bootstrap-gcp.sh | Non-root runtime image and one-time GCP/WIF/secret-container/budget setup |
+| .github/workflows | Backend lint/emulator CI plus Cloud Run/rules/indexes deployment and smoke probes |
+| docs/frontend-handoff.md, backend/specs | Frontend copy has English/gallery decisions; backend copy now has URL/extra errors; copies/report differ |
+| _Wiki | Canonical current synthesis, historical source/decisions/log, trackers and full audit inventory |
 
-Actual integration refs are main 6d9baea and dev 18c0d19. No generated production Firebase platform configuration is committed; complete OpenAPI export arrives in planned backend slice 07.
+## Flutter checks and modes
 
-## Testing quick start — working-tree correction, 2026-10-17
-
-This section preserves and reconciles the concurrent testing-query notes with the merge review. The client has fake sign-in, onboarding, upload/detail/settings and mocked tests; the counter-only inventory is historical. Runtime success is not established without executing Flutter.
-
-From repository root with a compatible Flutter SDK/device:
+Root manifest requires Dart ^3.13.4; lockfile Flutter >=3.47.0. Exact Flutter release not pinned. With a compatible installed SDK:
 
 ```powershell
 flutter doctor -v
@@ -39,54 +38,55 @@ flutter analyze
 flutter test
 flutter devices
 flutter run -d <device-id>
+flutter build apk --debug
 ```
 
-For the synthetic demo, leave Settings backend URL empty and omit USE_FIREBASE=true. Tap Continue with Google (fake), select at least two categories or Essential, continue, choose a synthetic gallery receipt and upload. Every second mock scan requests review with no detected amount. Inspect detail, Settings and sign-out. Mock data is in memory and image content is not interpreted; review editing, manual input, summaries and recurrence are not delivered by this demo.
+These commands are instructions, **not executed successes in this audit**. Flutter was absent in the checked PATH. Android uses min API24, Java/Kotlin17, AGP9.1.0/Kotlin2.4.0/Gradle9.3.1. Example com.example.baidget and debug signing in release remain. No google-services.json/firebase_options.dart/Google Services plugin integration is committed. Provider/app/signing and SDK compatibility need real verification.
 
-A nonempty URL enables real HTTP; it does not enable real auth. Real Google auth also needs USE_FIREBASE=true and Firebase platform configuration. Current real backend only supports /health and /v1/me, so category onboarding/scanning against it is incomplete. An invalid persisted URL can prevent access to Settings before onboarding; track FE-14 rather than repeatedly choosing an unusable URL.
+Synthetic demo: empty effective URL and USE_FIREBASE=false → fake Continue with Google, at least2 onboarding selections (Essential shortcut), upload a synthetic gallery image, view saved detail, Settings/sign-out. Every second mock scan has null amount/review. No OCR, durable expense storage, manual/edit/list/delete or summary/rule-management UI is demonstrated. Mock category-limit behavior differs from server; do not use it for upper-bound acceptance.
 
-## Backend setup and checks
+Real mode requires same-project Firebase platform/Google provider configuration plus `--dart-define=USE_FIREBASE=true` and `--dart-define=API_BASE_URL=<host>/v1`. Backend handoff host is documented in [infrastructure](../engineering/infrastructure.md); audit probes500/503 must be resolved first. A nonempty URL alone enables real HTTP while keeping fake auth by default. Settings URL overrides build default; clearing returns to build default, not necessarily mock. Settings is unavailable before home, so recover a bad persisted URL through app data/preferences or a deliberate recovery fix (FE-14).
 
-From backend/, follow [backend README](../../backend/README.md). The declared toolchain is Conda env baidget from environment.yml, Python 3.12; dependencies are not pinned.
+Client/gallery paths are Android-focused; other generated runners are not validated. Debug Android allows cleartext local HTTP; release does not explicitly enable it. Local emulator host mapping (e.g.10.0.2.2) needs actual device/network validation, not a promise of working routing. No CORS middleware is configured for a browser frontend.
+
+## Backend local setup
+
+Use [backend README](../../backend/README.md) and Python 3.12/Conda manifest; Firebase CLI and Java 21 are additional emulator prerequisites.
 
 ```sh
+cd backend
 conda env create -f environment.yml
 conda activate baidget
 ruff check .
 ruff format --check .
 firebase emulators:exec --project demo-baidget --only firestore,auth "python -m pytest -q"
+python scripts/export_openapi.py
 ```
 
-The Firebase CLI and Java are additional prerequisites. Both emulator host variables are mandatory for tests; plain pytest now fails before database client startup when either is absent. The guarded failure is intentional. Use demo-baidget and synthetic fixtures, never live Firebase/Gemini.
+Regeneration writes the snapshot; inspect its diff and run test_openapi_snapshot/test_contract through the emulator wrapper. Tests use an autouse fixture requiring both emulator host variables, even for nominally pure tests, and clear the emulator database. Never point them at a live project/provider or weaken the guard to get a green result. Gemini is mocked. The eval comparator is a separate manual tool, not a CI/quality gate or captured image benchmark.
 
-For a local API process, run the emulator exec wrapper with `uvicorn app.main:app --reload`, or explicitly configure emulator hosts. Settings do not automatically read .env; Uvicorn's --env-file option can load a local file. Health is at root /health; me/schema/docs use /v1. Production HTTPS and Android-emulator mapping are not supplied/tested.
+For local API use the same emulator exec wrapper around `uvicorn app.main:app --reload` (port8000 by default). Emulator8080 is Firestore, not API. Environment Settings does not read .env automatically; use Uvicorn `--env-file .env` if needed, never commit secrets. GET /health at host root; docs/schema/domain routes under/v1. Health does not test downstream readiness.
 
-## Observed verification environment and limits
+Full backend pytest/Ruff/export/container checks were not run here because required packages/tools are absent. Python 3.13 AST parsing/direct money and isolated-function probes are limited checks, not Python 3.12 application acceptance. Earlier14-test emulator results belong to the earlier auth/profile integration in [review](integration-review.md). No install/SDK provisioning was performed in this audit.
 
-A temporary Python 3.12.14 environment was created from the bundled runtime and populated with the exact package names in environment.yml; it is a verification alternative, not a change from Conda as the declared workflow. Java 21.0.8 and bundled Node 24.19.0 support local emulator tooling; Firebase CLI 15.34.0 was cached. See [integration review](integration-review.md) for exact commands/results, package resolutions and limitations.
+## Infrastructure and secrets
 
-Flutter/Dart, Conda and Docker are not available in the task PATH. No Flutter test/build, container build, hosted CI, production Firebase/Cloud Run or live Google/Gemini flow is claimed. GitNexus initially failed with the session's default Node shim; the bundled Node plus an escalated local command could use the installed runner. Later shared instructions/index were preserved, and pre-commit graph checks are recorded separately in the review.
+Use [infrastructure](../engineering/infrastructure.md) for GitHub variables, WIF, service accounts, Secret Manager, image/runtime limits, Firestore rules/indexes and trust gaps. Do not run bootstrap/deploy just to inspect state: these mutate cloud resources and require task authorization. This audit only read definitions and probed public health/auth/schema without tokens.
 
-Wiki check:
+## Documentation and graph checks
 
 ```powershell
-& C:/Users/Max/AppData/Local/Python/bin/python.exe _Wiki/tools/check_wiki.py
+python _Wiki/tools/check_wiki.py
+git diff --check
+node .gitnexus/run.cjs detect-changes --scope all --repo .
 ```
 
-A prior session verified that interpreter as Python 3.14.7; this machine-specific path is not a backend runtime selection. Structural checks do not establish feature correctness.
+Use a real Python 3.9+ interpreter; audit uses C:/Program Files/Python 313/python.exe (3.13.0). GitNexus became available after the user indexed this checkout. Explicitly bind Hacktoberfest26-bAIdget in MCP; named context/impact works, concept queries warned missing FTS and are not authoritative negative results. Graph framework/DI omissions need source confirmation. The checker validates local paths/metadata/index coverage, not URL uptime, heading anchors or behavior.
 
-## Collaboration and recovery
+Keep shared IDs, preserve raw notes and append-only history, update the three trackers and current state in the same change. Retained historical stash hashes are recorded in the earlier [log](../log.md); they were not inspected/restored by this audit. Do not blindly apply old snapshots over current work. No commit or push is implied by a documentation request.
 
-Update the [frontend](frontend-tracker.md), [backend](backend-tracker.md), and [infrastructure](infrastructure-tracker.md) registers with each meaningful source/check/status change; use [maintenance](../maintenance.md). Preserve concurrent policy/testing notes and append log entries, rather than overwriting previous results.
+<a id="local-android-provisioning-in-progress-2026-10-17"></a>
 
-The pre-integration local wiki/tracker backup is stash 9046be8c1d830584d8a3fe4028cd5e5689011cb8 (new untracked wiki files in its ^3 tree). The older bootstrap stash 7ee1ae3c86968ed83948a515cef9af506c527df7 is also retained. Do not blindly apply either over the integrated files. Personal _Wiki/.obsidian state is ignored, not published; generated emulator debug logs are excluded.
+## Historical local Android provisioning (2026-10-17)
 
-Git author metadata is separate from remote authentication; see [identity lesson](../lessons/git-author-identity.md). Publication uses the already verified current user's command-local identity, without changing global settings. Root AGENTS.md is canonical shared policy; scoped backend executor rules are additional implementation guidance and do not turn a merge/review into an unsolicited feature slice.
-
-## Local Android provisioning in progress (2026-10-17)
-
-The user authorized inspection and installation of the Windows test environment. Direct checks found Git/Winget and Microsoft OpenJDK 21.0.8 at `C:/Program Files/Android/openjdk/jdk-21.0.8`; Flutter/Android tools were absent from PATH. The machine reports Windows 10 Home 22H2, Intel i7-3630QM, about 16 GB RAM and about 816 GB free disk space. CIM reports an active hypervisor but firmware virtualization false; actual emulator acceleration remains unresolved. Reading Windows optional-feature state requires an elevated administrator token, which the execution process did not have.
-
-Flutter tag 3.47.7 was cloned from the official repository into `C:/Users/Max/develop/flutter`; the matching release manifest declares Dart 3.13.5, compatible with `^3.13.4`. Dart bootstrap and official Google command-line tools downloads are still running. User `ANDROID_HOME` and Flutter/platform-tools/emulator PATH entries were configured without replacing other entries. A resumed Android Studio installer did not match its official checksum and was not executed; do not treat the IDE as installed. Android command-line tools plus existing Java can provision the emulator without that IDE.
-
-A user-authorized local PowerShell procedure at `C:/Users/Max/develop/baidget-setup.ps1` is running hidden. It waits for the verified tools, installs API 36/build tools/emulator/Google APIs x86_64 image, creates `baidget_api36`, checks acceleration, configures Flutter, runs dependency resolution/analyze/tests/debug APK build, and attempts to launch the app if acceleration and build succeed. Its status, stdout and stderr are in the same directory as `baidget-setup-status.txt`, `baidget-setup.log` and `baidget-setup-errors.log`. This is an active installation process, not a recurring automation. Keep the computer awake and online. No reboot or firmware change is performed. Nonzero checks and required manual virtualization steps must be read from the logs; no frontend test/build/emulator success is claimed yet.
+A previous session on a different user profile reported Java 21.0.8, Flutter3.47.7 source at C:/Users/Max/develop/flutter, official Dart/Android downloads and a setup procedure at C:/Users/Max/develop/baidget-setup.ps1. Its status/log/error files were recorded beside it. A resumed Studio installer checksum failed and was not executed; acceleration and frontend checks were pending at that report. The audit host uses MaxAdmin and did not observe that old process or its final outcome. This is historical evidence, not an installation or successful build on the present host. See the unchanged provisioning entry in [log](../log.md).

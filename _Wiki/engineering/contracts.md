@@ -6,59 +6,66 @@ updated: 2026-10-17
 
 # Integration contracts
 
-Current declared baseline: [SRC-004](../raw/2026-10-17-frontend-handoff.md), [ADR-0005](../decisions/adr-0005-api-handoff-baseline.md). Backend dev 18c0d19 now supplies only GET /health and GET /v1/me. Runtime-generated /v1/openapi.json exposes those paths; the complete committed snapshot is planned in slice 07. Other endpoints below remain contract targets. See [integration review](../development/integration-review.md). The [frontend handoff](../../docs/frontend-handoff.md) additionally specifies English UI and gallery-only input; [ADR-0006](../decisions/adr-0006-integrated-client-and-backend.md) preserves those decisions.
+Requirement baseline: [SRC-004](../raw/2026-10-17-frontend-handoff.md)/[ADR-0005](../decisions/adr-0005-api-handoff-baseline.md). Current source baseline: main `b6d984e`, [backend handoff](../../backend/specs/frontend-handoff.md), [OpenAPI](../../backend/openapi.json), routers/models/services. All handoff operations now exist; the [audit](../development/repository-audit.md) statically matched all 21 registered operations to the snapshot. Runtime schema regeneration/full contract tests were not executed here.
 
-## Transport, identity, and retry rules
+## Transport, identity and retries
 
-- Production API base remains `https://<TBD>/v1`. Implemented unauthenticated health is host-root `/health`; profile is `/v1/me`. Firebase emulator ports Firestore 8080/Auth 9099 are not the FastAPI address or evidence of a deployed API.
-- Firebase SDK on the client is **Auth only**. Google sign-in uses `firebase_auth` and `google_sign_in` in the same Firebase project as the backend. No direct client Firestore access; deployment/rules compliance is unverified.
-- Obtain a Firebase ID token with `user.getIdToken()` before each request and send `Authorization: Bearer <token>`. On 401, force refresh once with `getIdToken(true)` and retry once; sign out if authentication still fails. Do not send `owner` or a user ID in mutation requests; the backend derives ownership.
-- JSON UTF-8, except multipart scan. Optional response fields are present as null rather than omitted. Offset timestamps accepted in requests; responses UTC with `Z`. Server month/year boundaries use `Europe/Rome`.
-- Client generates UUIDv4 before manual creation or scan and reuses it on timeout retries. API permits an omitted ID, but then safe client retries lack that key. Repeated ID for the same user returns the existing expense with 200 rather than 201, without creating another record.
-- EUR only. Amount is a JSON number with at most two decimals, greater than zero and at most 1,000,000 when supplied; null values are possible. Totals come from summary endpoints, never client aggregation of expense pages.
-- Expense pagination uses `limit` 1–100 (default 50) and opaque `cursor`, yielding `items` and nullable `next_cursor`. Do not assume other list endpoints paginate if their documented shape lacks a cursor.
-- Online-only, no synchronization protocol for offline edits. Recurrence sync is a separate server operation, not offline data sync.
+Backend handoff base: `https://baidget-api-voiguesqbq-ew.a.run.app/v1`; root health is `/health`. This audit observed500/503 service errors; see [infrastructure](infrastructure.md). [Frontend handoff](../../docs/frontend-handoff.md) still has TBD and adds English UI/gallery-only decisions. Flutter defaults to empty URL/mock; the production address must be supplied deliberately.
 
-## Endpoint registry
+Every domain operation requires Firebase Bearer auth. UID comes only from the verified token; Firebase client SDK is Auth-only. No owner field is accepted in expense mutation models (`extra=forbid`). Verification uses `check_revoked=False`; it does not restrict sign-in provider to Google. Health/docs/schema are public in source. Client interceptor refreshes/retries once on401, clones multipart and signs out on repeated authentication failure; provider-operation exceptions are handled, but real Google integration is unverified.
 
-Paths are recorded as supplied; apply the base URL once, after confirming health routing. Full request/response examples and detailed errors remain in SRC-004 to avoid a second competing schema.
+JSON UTF-8 except multipart scan. API amount responses are numbers, null if absent; requests normalize through Decimal and currently also accept numeric strings (OpenAPI number|string|null). EUR default allows omitted currency on manual create, unlike handoff's contradictory required/default wording. Amount >0, <=1,000,000 and at most two decimals. Offset-aware requests normalize to UTC Z. Server reports default Rome periods; occurrence math hardcodes Rome. See [model](domain-model.md).
 
-| Method / path | Declared behavior / key condition |
+Manual/scan IDs are optional UUIDv4; clients must generate/reuse them for safe retry. Transactional create returns 201 new or200 existing per user. Existing-body differences do not overwrite the record, but manual create validates category before checking the ID. A deleted manual ID returns 404 after valid request/category processing. Scan checks an existing *live* ID early, before image/quota/provider work. Deleted IDs fall through extraction/quota before eventual404; they are not resurrected, but failures can occur earlier. Concurrent fresh scans can invoke Gemini more than once while persisting only one expense.
+
+## Endpoint registry: source implemented
+
+All paths below are full server paths. Flutter currently consumes me, catalog/onboarding/category list, scan and sync; the remaining operations have no client repository/UI. Request/response model definitions and snapshot are the exact schema; this table summarizes behavior, not a second schema.
+
+| Method / path | Success and implemented behavior |
 | --- | --- |
-| GET /health | No auth; route prefix unresolved |
-| GET /me | Get/create profile on first call; uid/email/display_name/onboarding_completed |
-| GET /categories/catalog | English catalog and essential_4/complete_6 preset shortcuts |
-| POST /categories/onboarding | Catalog/custom selections, at least two input items; auto-add Other; 201 categories, mark onboarded; repeated onboarding 409 |
-| GET /categories | Active categories only |
-| POST /categories | Create category; 201; case-insensitive unique names/max limit |
-| PATCH /categories/{category_id} | Change name/icon/color; Other may be renamed |
-| DELETE /categories/{category_id} | 204; block non-deleted expense/active-rule references and deletion of Other |
-| POST /expenses | Create single expense; optional amount/seller/title/description; ID retry behavior above |
-| POST /expenses/scan | One image multipart, jpeg/png/webp, at most 10 MB; optional UUID; saved expense, 201/200; Other fallback; no image retention |
-| GET /expenses | Date descending; from inclusive/to exclusive ISO datetimes, category ID, single/recurring type, needs_review, limit/cursor |
-| GET /expenses/{expense_id} | Expense or 404, including foreign-owner resources |
-| PATCH /expenses/{expense_id} | date/seller/title/description/category/amount/currency/needs_review; null clears optional field; occurrence only |
-| DELETE /expenses/{expense_id} | 204 soft deletion; does not stop its recurrence rule |
-| POST /expenses/{expense_id}/make-recurring | weekly/monthly/yearly, optional inclusive local end_date; existing expense becomes first occurrence; backfill through today; 201 rule/expense/created_occurrences |
-| GET /recurring-rules | items of rules |
-| PATCH /recurring-rules/{rule_id} | Template seller/title/description/category/amount, end_date, active; cannot change frequency/start; only future not-yet-created occurrences affected |
-| DELETE /recurring-rules/{rule_id} | 204, set inactive; existing occurrences stay |
-| POST /recurring-rules/sync | Idempotently create missing occurrences; created/rules_processed/has_more; repeat while has_more |
-| GET /summary/monthly?month=YYYY-MM | Server period bounds, total/count/uncounted/by_category, EUR |
-| GET /summary/yearly?year=YYYY | Same shape, plus 12 by_month entries including zeros |
+| GET /health | 200 static status; no auth/dependency readiness check |
+| GET /v1/me | 200 get/create profile transaction; uid/email/display_name/onboarding_completed |
+| GET /v1/categories/catalog | 200 static 11-item English catalog, Essential/Complete presets; authenticated |
+| POST /v1/categories/onboarding | 201 categories; min 2 selected/custom, add Other, total active<=30, unique names, transactional completion;409 repeated |
+| GET /v1/categories | 200 items, active only, no cursor |
+| POST /v1/categories | 201 category, trimmed1–40-char name; unique active casefold name; max 30 |
+| PATCH /v1/categories/{category_id} | 200 name/icon/color; at least one field; name cannot be null; Other rename allowed |
+| DELETE /v1/categories/{category_id} | 204 archive;409 if Other, live expenses or active rule references |
+| POST /v1/expenses | 201/200 single manual expense, optional UUID/amount/text/default EUR |
+| POST /v1/expenses/scan | 201/200 persisted expense; multipart image and optional UUIDv4; JPEG/PNG/WebP decoded bytes,10,485,760-byte service limit |
+| GET /v1/expenses | 200 items/next_cursor; from inclusive/to exclusive, category/type/needs_review filters, limit 1–100 default 50 |
+| GET /v1/expenses/{expense_id} | 200 expense or404 for absent/deleted/foreign ID |
+| PATCH /v1/expenses/{expense_id} | 200 allowed date/text/category/amount/currency/needs_review fields; empty/forbidden/null required fields422; one occurrence only |
+| DELETE /v1/expenses/{expense_id} | 204 soft delete; repeated delete404, rule continues |
+| POST /v1/expenses/{expense_id}/make-recurring | 201 rule/expense/created_occurrences; converts source to index 0 and performs one capped catch-up;409 already recurring |
+| GET /v1/recurring-rules | 200 items including inactive, excluding deleted_at; no pagination |
+| PATCH /v1/recurring-rules/{rule_id} | 200 editable template/end_date/active; no frequency/start/currency; affects unmaterialized occurrences |
+| DELETE /v1/recurring-rules/{rule_id} | 204 active=false; rule stays listed, can be reactivated; expenses unchanged |
+| POST /v1/recurring-rules/sync | 200 created/rules_processed/has_more;20 rules/50 indexes per rule per call; issues below |
+| GET /v1/summary/monthly?month=YYYY-MM | 200 server period/total/count/uncounted/by_category |
+| GET /v1/summary/yearly?year=YYYY | 200 same plus12 monthly entries including zeros |
 
-## Categories, scan review, and recurrence
+Lists use descending date then descending document ID. Cursor is base64 JSON date/id, opaque to clients, validated before `start_after`; it is not signed or bound to original filters. Invalid cursor422. Query range order `from<to` is not explicitly enforced by the service. Response optional fields are explicit nulls; deleted expenses are excluded, so returned deleted_at is null.
 
-Catalog IDs: `groceries, dining_out, transport, housing, bills, health, entertainment, shopping, travel, education, subscriptions`. Essential selects groceries/transport/housing/entertainment; Complete adds dining_out/health. Onboarding has at least two chosen/custom categories and a maximum of 30 is declared; whether Other counts toward the maximum needs OpenAPI/owner confirmation. Other is distinguished by `is_other`, not its editable display name.
+## Categories and persisted scan review
 
-Compress images to long side at most 2048 pixels and approximately JPEG quality 85. Show a loader, use client timeout 45 seconds, and reuse the ID on retry. The source's approximately 3–10 seconds is an estimate, not measured performance. Scan **already saves** the expense: display/edit it via PATCH; clear `needs_review` after review. Unreliable date/amount or item/total mismatch triggers review; absence of both readable merchant and total is `extraction_failed`, with no created expense.
+Catalog IDs: groceries, dining_out, transport, housing, bills, health, entertainment, shopping, travel, education, subscriptions. Essential selects groceries/transport/housing/entertainment; Complete adds dining_out/health. Server adds Other and counts it in30. Duplicate catalog/custom names fail409; names trimmed/casefolded. Client/mock instead allow30 picks before Other; this is unresolved integration drift, not an alternative approved maximum. Backend icons `receipt_long` and `medical_services` fall back to the client's generic label icon.
 
-Rules use `single|recurring`, not the superseded `concurrent`. Editing an occurrence does not edit its series; changing/deleting a rule leaves created occurrences intact. Monthly 31st clamps to shorter-month end and returns to the original day afterward. Reactivation does not backfill the paused interval. App start/resume triggers sync, but UI refresh/error ordering and rule timezone/leap-year details still need agreement.
+Scan performs client/server JPEG preparation (long side<=2048, quality 85), default provider timeout 30s and client receive timeout 45s. Image type is decoded, not trusted from extension/MIME. Quota is transactional fixed UTC-hour (default 30 attempts/user), consumed before provider/extraction success.429 includes Retry-After. Successful response is already saved: no second confirmation/create. Missing/invalid date uses current UTC and review; naive extracted date uses TZ_NAME. Missing/invalid amount, item/total discrepancy >one cent per item, invalid item values or VAT set review. Neither merchant nor valid total yields422 without an expense. Unknown category maps to caller's Other. Extracted currency is currently ignored and stored EUR; see Q-29.
 
-## Summary and errors
+`scan_details` money conversion exists only in scan service response. Ordinary GET/list/PATCH and make-recurring responses call `_expense_response`, leaving stored `unit_price_cents`, `total_cents`, `vat_total_cents` inside the arbitrary dict. The Flutter parser expects `unit_price`, `total`, `vat_total`; reloaded records would lose displayed scan money. OpenAPI does not constrain this nested object. This source-verified discrepancy is not fixed by this audit.
 
-Null amounts are excluded from totals and exposed via `uncounted`; never treat them as zero-valued purchases. Categories are sorted by total descending, including archived categories with expenses. Percentage is informational and may not sum to 100. Soft-deleted expenses are absent from responses; `deleted_at` in returned expenses is null. Week summaries, budget endpoints, offline sync, and email import are not defined/current scope.
+## Recurrence and summaries
 
-Errors use `{error: {code, message, details}}`; branch on code, not the English message. Codes: 401 `unauthenticated`; 404 `not_found`; 409 `already_onboarded`, `category_in_use`, `cannot_modify_other`, `category_name_taken`, `already_recurring`; 413 `image_too_large`; 415 `unsupported_image_type`; 422 `validation_error` (details.fields), `min_categories`, `max_categories`, `category_not_found`, `extraction_failed`; 429 `rate_limited` with Retry-After seconds (default 30 scans/hour/user); 503 `extraction_unavailable`; 504 `extraction_timeout`; 500 `internal_error`.
+Rules anchor in Europe/Rome, inclusive local end_date, weekly/monthly/yearly arithmetic from original start; Jan31→Feb28→Mar31 and Feb29→Feb28/non-leap→Feb29/leap. Source expense retains its ID and original metadata at index 0. Generated UUIDv5 records use source=manual, scan_details=null, needs_review=false, internal recurrence.index. Existing records, including deleted occurrences, are skipped. Pause→resume sets resume_from=now and skips prior indexes, with a50-index processing cap. DELETE is deactivation, not tombstoning.
 
-Implementation/verification remains in the [backend tracker](../development/backend-tracker.md); client behavior in [frontend](../development/frontend-tracker.md); addresses/provider setup in [infrastructure](../development/infrastructure-tracker.md). See [open questions](../open-questions.md) and [model](domain-model.md).
+Sync prioritizes due rules, then other active rules, sorted by ID; no cursor. `has_more` is initialized true whenever active count>20, even if none due. Flutter makes at most five calls, swallows failure and does not refresh lists/summaries (which have no UI yet); overlapping lifecycle sync is not serialized. Conversion only performs one capped catch-up, so an old source can require later sync. Existing expenses never change when the rule template changes; overdue but not-yet-created occurrences use the current template.
+
+Summaries stream all non-deleted records in [from,to), aggregate integer cents and fetch names including archived categories. `count` and category/month count include only non-null amounts; `uncounted` includes null amounts and excludes them from buckets/totals. Percentages use Decimal ROUND_HALF_UP to one decimal, categories sort by total descending; zero total branch returns 0.0, empty summary categories empty. Yearly always returns 12 months. No weekly, comparison, budget or email API exists.
+
+## Errors and contract drift
+
+Envelope `{error:{code,message,details}}`; branch on code.401 unauthenticated;404 not_found;409 already_onboarded/category_in_use/cannot_modify_other/category_name_taken/already_recurring;413 image_too_large;415 unsupported_image_type;422 validation_error/min_categories/max_categories/category_not_found/extraction_failed;429 rate_limited;503 extraction_unavailable;504 extraction_timeout;500 internal_error. Validation details list fields; request middleware adds X-Request-ID. Unsupported HTTP methods are mapped from 405 to 500 by the generic HTTP handler, a retained defect.
+
+[CONTRACT-REPORT](../../backend/CONTRACT-REPORT.md) describes currency optionality, unconstrained scan_details and extra endpoint errors, but became partly stale when backend handoff documented deleted-ID/category errors. The frontend copy remains older. Snapshot permits number|string for Decimal input and generic nested scan_details; UUIDv4/precision rules are partly custom validators rather than complete schema constraints. Structural endpoint/error-code tests do not prove every runtime condition or nested response. Use [review](../development/integration-review.md#post-merge-audit-at-b6d984e), [questions](../open-questions.md) and [backend tracker](../development/backend-tracker.md) for remaining reconciliation and verification.

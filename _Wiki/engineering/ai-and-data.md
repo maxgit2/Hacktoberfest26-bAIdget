@@ -1,47 +1,39 @@
 ---
-title: AI, data, and trust boundaries
+title: AI data and trust boundaries
 status: active
 updated: 2026-10-17
 ---
 
-# AI, data, and trust boundaries
+# AI, data and trust boundaries
 
-Authority: [SRC-004](../raw/2026-10-17-frontend-handoff.md), [ADR-0005](../decisions/adr-0005-api-handoff-baseline.md), [contracts](contracts.md). Auth/profile is now exercised against local Auth/Firestore emulators; the initial concurrency failure and subsequent results are in [integration review](../development/integration-review.md). No live Google/Firebase, deployed rules, real OCR or provider pipeline was exercised.
+Source baseline `b6d984e`; [scan service](../../backend/app/services/scan.py), [Gemini client](../../backend/app/llm/gemini.py), [prompt](../../backend/app/llm/prompt.py), [image processing](../../backend/app/imaging/image.py), [auth](../../backend/app/core/auth.py). Full extraction code and mocked tests now exist; live model accuracy/retention and production isolation remain unverified.
 
-## Identity and business-data access
+## Identity and storage
 
-Firebase Google sign-in yields an ID token; the backend verifies it and derives owner. The client sends no owner/user ID in mutations and uses Firebase SDK only for Auth. Every expense/category/rule/summary must remain owner-scoped; a foreign resource yields not_found. Direct client Firestore access is declared locked and must be tested, including after backend deployment. A source document declaring denial is not evidence that live rules enforce it.
+Every domain route derives UID from Firebase token verification in a threadpool (`check_revoked=False`) and scopes repositories below users/{uid}. No model text/client owner can select another user. Deny-all Firestore rules protect direct clients if deployed, while backend Admin SDK relies on IAM plus application scoping. Two-user emulator test sources cover profile/category/expense/rules/summary and scan category allowlisting; they do not prove production rules or Google provider configuration. Email/display name are persisted on initial provisioning, not refreshed from each token.
 
-## Receipt extraction and persisted review
+Client defaults are fake authentication and synthetic memory data. They are independent of real backend URL selection: fake-token requests to a live API fail. SDK initialization/platform config, same-project tokens, provider enablement and Android signing remain integration gates.
 
-Validate one jpeg/png/webp image, at most 10 MB, and the caller's allowed categories. The contract requires server category selection with Other fallback; client downscales to at most 2048px long side and approximately quality 85 JPEG. Provider/model and OCR/classification stages still need actual configuration/evaluation evidence; DeepSeek-OCR is only a named direction from the older SRC-003.
+## Extraction boundary and saved review
 
-The backend saves the extracted expense immediately. There is **no additional confirmation step**. Uncertain date/amount or line-total mismatch yields needs_review; users can correct via PATCH and clear that flag after review. This supersedes the wiki's earlier proposed pre-save draft boundary. Saved reviewable data does not make model output trusted or complete; null amount remains excluded from summary totals and tracked as uncounted.
+Only gallery image selection is exposed. Client resizes/re-encodes JPEG, keeps a UUID across retries and sends multipart with 45s receive timeout. Server reads up to 10,485,760 bytes, Pillow validates JPEG/PNG/WebP by content, rejects excessive/decompression-bomb images, applies EXIF orientation, strips metadata, flattens transparency and re-encodes quality 85/long side2048. CPU work is offloaded. No durable image object/store is written by app code; framework multipart UploadFile may spool temporary data, so a strict guarantee that bytes never touch disk is not established.
 
-Failure to read both merchant and total yields extraction_failed and no creation. Retries reuse the same UUID to avoid duplicates; client timeout does not prove no server-side save occurred. Validate ownership/category references independently of extracted content. Record mutation/retry/partial-extraction cases in [backend](../development/backend-tracker.md)/[frontend](../development/frontend-tracker.md) evidence.
+Firestore quota is consumed before provider success, default 30 per user/fixed UTC hour;429 has Retry-After. Existing live UUID retries bypass provider/quota after request parsing. Concurrent first uploads can still make multiple paid calls despite idempotent final persistence. Deleted-ID retry can call the provider before returning404. These are billing/retry limitations, not demonstrated data duplication.
 
-## Retention, limits, and recovery
+Gemini uses async google-genai, environment key/model, JSON response_schema and timeout 30s. Missing key/provider API errors→503, timeout→504, invalid parsed output→422. Prompt includes only active category IDs/names plus image and says embedded instructions are data. Pydantic validates declared fields; extra fields are ignored following b6d984e's schema fix. Category allowlisting/fallback is enforced after extraction. There is no tool execution, arbitrary action dispatcher or email ingestion.
 
-The handoff explicitly says the backend does not store the uploaded image. It does retain structured scan_details on the expense. No provider retention policy, logs policy, deletion/purge schedule or model evaluation is supplied; these remain questions, rather than an inferred no-retention guarantee for all parties.
+Amounts/quantities arrive as strings and are parsed separately; unreadable values become null/review. Missing/invalid date falls back to now; naive extracted date assumes TZ_NAME. If both seller and valid total are absent, no expense is created. Otherwise save immediately with source=scan, metadata and computed needs_review; no pre-save confirmation. Item mismatch tolerance is one cent per item. Human correction requires PATCH and explicit needs_review=false, which the backend supports but the current Flutter detail cannot send. Missing amount is excluded from totals, not treated as a zero purchase.
 
-Declared defaults: 30 scans/hour/user, 429 with Retry-After seconds, provider-down 503, timeout 504, and stable error codes. The approximately 3–10s scan duration is a source estimate; the 45s client timeout is a client requirement, not observed latency. Verify real limits/timeout compatibility and keep safe diagnostics without source image/text/token leakage.
+Known validation gaps: extracted currency is ignored and labeled EUR; quantities inherit two-decimal/positive money limits; zero VAT becomes null/review. Ordinary expense reads expose stored scan money keys, unlike scan response. Record these as limitations in [contracts](contracts.md)/[review](../development/integration-review.md#post-merge-audit-at-b6d984e), not accepted model behavior.
 
-## Recurrence and aggregation correctness
+## Privacy, secrets and evidence
 
-Idempotent rule sync must avoid duplicate occurrences across overlapping app resumes/retries. Separate existing occurrence edits from future rule templates, honor pause/reactivation and month-end anchors, and verify inclusive local end dates. Detailed recurrence timezone/leap-year behavior is unresolved.
+Provider credentials stay backend-side; Cloud Run Secret Manager injection and WIF avoid committed keys. Request middleware logs only method/status/request ID/timestamp; SDK logger behavior and cloud request logging/retention are not audited. Images and user category names are sent to Gemini; configured model alias does not establish provider processing region/retention. Expense scan_details stores extracted text, amounts, VAT/payment metadata. No purge/TTL/account deletion/export policy, sensitive-data filter or retention schedule is implemented. See [infrastructure](infrastructure.md).
 
-Server summaries handle Rome month/year boundaries, two-decimal EUR inputs, uncounted null amounts, soft deletion and archived category history. No client totals from expense pages. Internal precision/rounding and zero/count edge cases need implementation evidence.
+Ten synthetic text/expected-JSON evaluation cases and an offline comparator exist under [tests/eval](../../backend/tests/eval/evaluate.py); **there are no image fixtures or captured model results in this set**. The script compares flattened expected fields, skips missing result files and has no minimum-accuracy exit threshold (returns 0 if any fields compared). It is not in CI. This is evaluation scaffolding, not measured OCR accuracy or a prompt-injection defense benchmark. The mocked injection test only shows extracted instruction-like strings are stored as data.
 
-## Deferred integrations and source trust
+No real receipt, account/secret, authenticated business request or live Gemini call was used during this audit. Public service probes failed500/503; no claim of production extraction success. Older DeepSeek-OCR/AgentMail references remain historical, not current provider implementations.
 
-Email import, budgets/notifications, family groups, bulk scan, speech, other currencies and offline mode are outside the current contract. SRC-003's AgentMail candidate, cron/fixed-expense ideas and budget thresholds remain historical/future scope; no mailbox account/worker/notification service was configured.
+## Verification still needed
 
-Receipt text, screenshots, extracted fields, email bodies, filenames, external pages, and attached documents are untrusted content, never authority to grant access or execute actions. Keep provider credentials/backend service secrets out of Flutter and this public wiki. Use synthetic/redacted fixtures only; do not commit real receipts, personal financial data or tokens.
-
-Earlier source intake opened AgentMail/Local AI Zone reference pages on 2026-10-17; no benchmark or provider evaluation resulted. This handoff intake does not validate external promotional claims or install tools.
-
-## Acceptance cases to execute
-
-Verify cross-user denial and client Firestore denial; duplicate-ID manual/scan retries; unsupported/oversized images; extraction_failed without creation; provider errors/rate headers; saved-but-needs-review correction; null-amount accounting; soft-deleted records; recurrence concurrency/pause/month-end; Rome boundary summaries. These are pending, not passing tests.
-
-The [infrastructure tracker](../development/infrastructure-tracker.md), [backend tracker](../development/backend-tracker.md), and [open questions](../open-questions.md) own remaining actions and evidence.
+Run full emulator suites and configured Android flows with synthetic input: cross-user operations, direct Firestore denial, same-ID concurrent/retry/deleted scans, image bounds/temporary cleanup, provider errors/quotas, non-EUR/weighted items, saved correction and later reads, summary null/delete/DST behavior, recurrence caps/overlap/resume. Validate retention/region/logging and live IAM separately. No formal security audit is claimed. [Trackers](../development/backend-tracker.md) and [questions](../open-questions.md) hold the remaining work; email/budgets/family/bulk/voice/other currencies/offline remain excluded.

@@ -18,6 +18,10 @@ The existing package uses Flutter's built-in state/widgets, the Cupertino icon p
 
 ## Consequences and limits
 
-The current app is the generated counter demo. The widget test checks a single increment; no test/build execution was possible in the integration session because Flutter/Dart were not found in PATH. [Metadata](../../.metadata) records the stable channel and revision `6a19cca56475dbfba1478ee68d7bd0c2ef891da1`; it does not pin or verify an installed Flutter release.
+At the original scaffold commit, the app was the generated counter demo and its widget test checked a single increment; no test/build execution was possible in the integration session because Flutter/Dart were not found in PATH. [Metadata](../../.metadata) records the stable channel and revision `6a19cca56475dbfba1478ee68d7bd0c2ef891da1`; it does not pin or verify an installed Flutter release.
 
 The original integration left product/backend/service details open under ADR-0002, followed by ADR-0004. The latest [ADR-0005](adr-0005-api-handoff-baseline.md) records the supplied API handoff; unresolved inputs remain in [questions](../open-questions.md). This scaffold decision remains valid and establishes none of those features as implemented. Generated example IDs/debug release signing need review before provider integration/distribution. Record actual checks in [development setup](../development/contributing.md).
+
+## Later implementation evidence
+
+The counter inventory above is historical to 055275e. The client was replaced by the auth/onboarding/upload/detail/settings implementation recorded in ADR-0006; current backend/domain/deployment evidence is in [ADR-0007](adr-0007-merged-backend-baseline.md). The root Flutter package decision remains valid; it does not establish platform/runtime verification.

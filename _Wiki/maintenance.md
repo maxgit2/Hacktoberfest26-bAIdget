@@ -20,7 +20,7 @@ Repository code is a changing implementation artifact, not an immutable source s
 
 ## Page conventions
 
-- Use English, UTF-8 Markdown, descriptive lowercase hyphenated filenames, and relative Markdown links. GitHub is the baseline reader; Obsidian is optional.
+- Use English, UTF-8 Markdown, descriptive lowercase hyphenated filenames, and relative Markdown links. GitHub is the baseline reader; Obsidian is optional. Python file IO must specify `encoding="utf-8"` (or `utf-8-sig` when intentionally accepting a BOM); Windows default CP1252 can fail on UTF-8 source or silently corrupt punctuation. Review non-ASCII text after scripted rewrites.
 - Topic, register, template, and source pages start with `title`, `status`, and `updated` frontmatter. Use ISO dates. Add owner or issue links only when known.
 - Page status is one of `active`, `draft`, `superseded`, or `template`. A page's status describes the document, not whether its feature is implemented.
 - Put claim status in the text: **requirement** (from a brief), **proposed** (not agreed), **accepted** (decision with authority), **verified** (observed evidence), **implemented** (code plus verification), or **unknown**. Decision records have a separate decision status.

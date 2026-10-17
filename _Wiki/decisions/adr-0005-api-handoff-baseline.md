@@ -27,9 +27,9 @@ updated: 2026-10-17
 
 See [contracts](../engineering/contracts.md), [model](../engineering/domain-model.md), and [flows](../product/user-flows.md) for details. DeepSeek-OCR remains a name from SRC-003, not a provider/version reaffirmed by SRC-004; deployment/model selection still needs evidence.
 
-## Limits and unresolved issues
+## Historical intake limits and remaining reconciliation
 
-No `openapi.json`, API host, emulator address, backend source, Firebase configuration/rules, or service tests are available here. Resolve schema/text differences and underspecified cases with the backend owner through the team's normal channel; this task does not authorize sending messages. Preserve explicit questions about category maximum counting, recurrence timezone/leap dates, list/rule pagination, and lifecycle synchronization ordering.
+At SRC-004 intake, no `openapi.json`, API host, emulator address, backend source, Firebase configuration/rules, or service tests were available. Current main supplies full backend/OpenAPI/deploy/URL artifacts; see [ADR-0007](adr-0007-merged-backend-baseline.md) and [current contracts](../engineering/contracts.md). Mobile platform configuration, runtime verification and explicit drift resolution remain open. Resolve schema/text differences and underspecified cases with the backend owner through the team's normal channel; this task does not authorize sending messages. Code now answers category maximum counting and recurrence timezone/leap dates; client-limit mismatch and lifecycle completion remain open. Preserve historical questions while updating their current evidence.
 
 SRC-004's broad “no confirmation” rule supersedes the wiki's proposed pre-save boundary, while backend validation and human correction remain required trust boundaries. A saved record with uncertain extraction is reviewable data, not trusted model authority.
 

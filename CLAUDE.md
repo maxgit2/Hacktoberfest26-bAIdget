@@ -14,7 +14,7 @@ Before handing work back, update the relevant wiki pages and append the task's e
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **Hacktoberfest26-bAIdget** (1318 symbols, 2236 relationships, 22 execution flows).
+This project is indexed by GitNexus as **Hacktoberfest26-bAIdget** (1988 symbols, 4007 relationships, 115 execution flows).
 
 > Index stale? Run `node .gitnexus/run.cjs analyze --index-only` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? Bootstrap with `npx`, `bunx`, or `pnpm dlx` — e.g. `bunx gitnexus@latest analyze` (npm 11 npx crash; #1939).
 

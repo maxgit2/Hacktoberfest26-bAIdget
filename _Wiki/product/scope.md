@@ -6,7 +6,7 @@ updated: 2026-10-17
 
 # Product scope
 
-Current client/API scope: [SRC-004](../raw/2026-10-17-frontend-handoff.md), [ADR-0005](../decisions/adr-0005-api-handoff-baseline.md). Integration of frontend 6d9baea and backend 18c0d19 adds partial screens/mocks and health/auth/profile source. [ADR-0006](../decisions/adr-0006-integrated-client-and-backend.md) and [integration review](../development/integration-review.md) record the evidence limits. The full API remains a target; earlier raw sources/scaffold decisions are history.
+Current client/API scope: [SRC-004](../raw/2026-10-17-frontend-handoff.md), [ADR-0005](../decisions/adr-0005-api-handoff-baseline.md). Current main `b6d984e` contains the full backend handoff route set and a partial Flutter client. [ADR-0007](../decisions/adr-0007-merged-backend-baseline.md) and the [current review](../development/integration-review.md#post-merge-audit-at-b6d984e) distinguish source delivery, missing client features, unrun checks and observed service errors. Earlier raw sources/scaffold decisions remain history.
 
 ## Current integration scope
 
@@ -15,15 +15,15 @@ Personal Android expense tracking, online-only and EUR-only, with English UI and
 | ID | Current requirement | Evidence / implementation boundary |
 | --- | --- | --- |
 | REQ-01 | Firebase Google auth and one-refresh Bearer retry | Client SDK/adapter and backend auth present; fake default, real project configuration unverified |
-| REQ-02 | Catalog/presets/custom onboarding, bounds, CRUD and Other protections | Onboarding UI/mock present; backend slice 02/category maintenance absent; max includes Other in backend proposal |
-| REQ-03 | One gallery receipt/payment image; immediate save and review correction | Upload/read-only detail/mock present; backend scan and client PATCH correction absent; no camera route |
-| REQ-04 | Manual single-expense create/edit/delete; optional amount; EUR; UUID retry key | Owner/type/source/timestamps are not editable request fields |
+| REQ-02 | Catalog/presets/custom onboarding, bounds, CRUD and Other protections | Backend categories/onboarding/CRUD code and tests present; Flutter only onboarding/read; server30 includes Other, client/mock30 excludes it |
+| REQ-03 | One gallery receipt/payment image; immediate save and review correction | Backend Gemini scan/PATCH source and tests present; Flutter upload/read-only detail, no correction form; live extraction unverified |
+| REQ-04 | Manual single-expense create/edit/delete; optional amount; EUR; UUID retry key | Backend CRUD source and tests present; Flutter manual/edit/delete/list absent; owner/type/source/timestamps immutable |
 | REQ-05 | Email import | Explicitly outside current scope; retain as deferred roadmap |
-| REQ-06 | Monthly/yearly and category summaries, uncounted values, yearly 12 month buckets | Weekly/previous-period presentation from SRC-003 not defined here |
-| REQ-07 | Navigate onboarding/categories, expenses, input/review, recurrence, summaries | Exact home layout remains design work |
-| REQ-08 | Expense/category/rule fields and error/idempotency/pagination conventions | [Domain model](../engineering/domain-model.md), missing OpenAPI blocks final schema verification |
+| REQ-06 | Monthly/yearly and category summaries, uncounted values, yearly 12 month buckets | Server summary source/tests present; client absent; weekly/previous-period extension not specified |
+| REQ-07 | Navigate onboarding/categories, expenses, input/review, recurrence, summaries | Current home is upload only; complete feature navigation not implemented |
+| REQ-08 | Expense/category/rule fields and error/idempotency/pagination conventions | [Domain model](../engineering/domain-model.md) and committed OpenAPI now exist; nested scan shape and textual drift remain |
 | REQ-09 | Budgets/alerts | Explicitly outside current scope; no budget schema/endpoints |
-| REQ-10 | Recurring rule conversion/edit/stop and idempotent sync on start/resume | Distinct occurrence/series edits; replaces undefined concurrent/cron assumptions |
+| REQ-10 | Recurring rule conversion/edit/stop and idempotent sync on start/resume | Backend rules/sync present; client bounded lifecycle hook only, no management UI; has_more completion defect |
 
 ## Milestones and maintained work registers
 
@@ -43,6 +43,6 @@ Email, budgets, family, bulk scan, speech-to-text, other currencies, and offline
 
 ## Acceptance gate
 
-Verify on real configured client/backend: Google login and first/returning onboarding; category constraints/Other; owner isolation and error codes; UUID retries without duplicates; manual CRUD; scan saved-on-return/review correction/failure recovery; recurrence sync and separate occurrence/series edits; server summary totals/null handling/Rome boundaries; client Firestore denial. Source examples and the counter smoke test do not satisfy these gates.
+Verify on real configured client/backend: Google login and first/returning onboarding; category constraints/Other; owner isolation and error codes; UUID retries without duplicates; manual CRUD; scan saved-on-return/review correction/failure recovery; recurrence sync and separate occurrence/series edits; server summary totals/null handling/Rome boundaries; client Firestore denial. Source presence, mocked tests and historical auth/profile checks do not satisfy the complete product gate. Public service probes failed500/503 during this audit; see infrastructure evidence.
 
 See [flows](user-flows.md), [contracts](../engineering/contracts.md), [questions](../open-questions.md), and the three registers for the exact remaining work.

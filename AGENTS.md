@@ -13,7 +13,7 @@ Write all documentation, code comments, docstrings, and committed technical expl
 3. Read the topic pages and decisions relevant to the task; check [_Wiki/open-questions.md](_Wiki/open-questions.md) before choosing an unresolved contract.
 4. Inspect the actual files and current changes before editing. The wiki describes context and intent; source code, configuration, and observed checks establish implemented behavior.
 
-The target is a personal Android expense tracker using Firebase Google sign-in, backend-only business data, saved-scan review and later expense/recurrence/summary operations. Current source includes a partial Flutter client with default fake auth/in-memory mocks and backend slices 00/01 (health/auth/profile only). Real Firebase configuration, complete OpenAPI, categories/expenses/OCR/summaries/recurrence APIs and deployment are incomplete. See [current state](_Wiki/current-state.md), [architecture](_Wiki/engineering/architecture.md), and [integration review](_Wiki/development/integration-review.md); never infer real feature delivery from a client mock.
+The target is a personal Android expense tracker using Firebase Google sign-in and backend-only business data. Current main includes a partial Flutter client (default fake auth/in-memory mocks; onboarding/gallery upload/read-only detail/settings) and FastAPI source for all handoff domains: profile, categories, expenses, Gemini scan, summaries and recurring rules/sync. OpenAPI, CI, Cloud Run deploy/bootstrap, rules/indexes and a service URL exist. Real mobile Firebase setup, complete client UI and full current runtime verification remain open; audit public service probes returned 500/503. Read [current state](_Wiki/current-state.md), [architecture](_Wiki/engineering/architecture.md), [infrastructure](_Wiki/engineering/infrastructure.md), and [current review](_Wiki/development/integration-review.md#post-merge-audit-at-b6d984e); never infer tested delivery from source, mocks or deployment definitions.
 
 ## Keep shared knowledge current
 
@@ -55,7 +55,7 @@ Documentation is part of task completion. Keep it proportionate to a one-day hac
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **Hacktoberfest26-bAIdget** (1318 symbols, 2236 relationships, 22 execution flows).
+This project is indexed by GitNexus as **Hacktoberfest26-bAIdget** (1988 symbols, 4007 relationships, 115 execution flows).
 
 > Index stale? Run `node .gitnexus/run.cjs analyze --index-only` from the project root — it auto-selects an available runner. No `.gitnexus/run.cjs` yet? Bootstrap with `npx`, `bunx`, or `pnpm dlx` — e.g. `bunx gitnexus@latest analyze` (npm 11 npx crash; #1939).
 

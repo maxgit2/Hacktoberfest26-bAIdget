@@ -6,58 +6,57 @@ updated: 2026-10-17
 
 # Domain model
 
-Current declared model: [SRC-004](../raw/2026-10-17-frontend-handoff.md), [ADR-0005](../decisions/adr-0005-api-handoff-baseline.md). Frontend expense/category/profile parsers now exist under lib/features; backend UserResponse and the users/{uid} repository are implemented. Category/expense/rule persistence is still planned. [Backend data specs](../../backend/specs/02-data-model.md) propose cents/Decimal storage, names/IDs, Rome recurrence anchors and caps; separate human acceptance of those internally adopted proposals is not evidenced here. See [ADR-0006](../decisions/adr-0006-integrated-client-and-backend.md). The fields below remain the target API model, not a claim all backend models exist.
+Current source: main `b6d984e`, [Pydantic models](../../backend/app/models/expense.py), repositories/services and [OpenAPI](../../backend/openapi.json). The full persistence model is now present, extending [SRC-004](../raw/2026-10-17-frontend-handoff.md). [ADR-0007](../decisions/adr-0007-merged-backend-baseline.md) records observed choices without inventing independent approval. All business collections are below token-derived `users/{uid}`.
 
-## Expense
+## Persistence map
 
-| Field | Current declared meaning / mutation boundary |
+| Document | Stored fields / behavior |
 | --- | --- |
-| id | UUIDv4; client generates/reuses for create/scan retries; server can generate if omitted; immutable |
-| owner | Firebase UID in responses, derived by backend from verified token; never sent by client |
-| date | Purchase ISO timestamp; offsets accepted, UTC Z returned; patchable |
-| seller, title, description | Optional text, response null when absent; PATCH null clears |
-| category | User category ID, not a display label; must exist and not be archived; patchable |
-| type | single or recurring; creation produces single; conversion uses make-recurring, never PATCH type |
-| recurrence | Null for single; recurring refers to rule via rule_id |
-| amount | Optional/null; when supplied positive, at most 1,000,000, at most two decimals; patchable |
-| currency | EUR only; source lists create currency as required with default EUR; omission behavior needs missing OpenAPI |
-| source | manual or scan; immutable; no email value in current contract |
-| scan_details | Null for manual; scan metadata described below, not a retained image |
-| needs_review | Review flag; PATCH false after human review; saved does not mean fully reviewed |
-| created_at, updated_at | Server response UTC timestamps; not client-editable |
-| deleted_at | Soft-delete metadata; always null on returned expenses because deleted items are excluded |
+| users/{uid} | email/display_name from initial token, onboarding_completed=false initially, created_at/updated_at; transactionally provisioned by /me, existing token profile is not refreshed |
+| categories/{category_id} | name/name_key/icon/color/catalog_id/is_other/archived_at/created_at/updated_at; IDs cat_ plus8 UUID hex chars; archive marker explicit null initially, no deleted_at field |
+| expenses/{expense_id} | UTC date, nullable text, category ID, type, recurrence, amount_cents, EUR, source, scan_details, needs_review, timestamps, deleted_at=null initially; owner/id injected from UID/document on responses |
+| recurring_rules/{rule_id} | frequency/start/anchor_tz/end_date/active/next_index/resume_from/template/source_expense_id/timestamps/deleted_at; IDs rule_ plus8 UUID hex chars |
+| meta/scan_rate | UTC window_start and count, overwritten for next fixed hourly window |
 
-Response optional fields are returned as null, not omitted. PATCH cannot change id/owner/type/source/timestamps. Never infer backend ownership from a payload field or model text.
+The latter four paths are subcollections/documents under users/{uid}. UUID-prefix IDs are not guaranteed collision-free by a dedicated uniqueness reservation; expense create is transactional and returns existing records for reused IDs. No uploaded-image collection, inbox, budget, sharing membership, offline-operation log or user deletion endpoint exists.
 
-`scan_details` includes document_type (receipt/invoice/payment_screenshot/other), items (description, quantity, unit_price, total), vat_total, vat_number, and payment_method; metadata fields can be null. The source example illustrates shape, not proven extraction quality. Images are declared not stored by the backend; provider retention remains unknown.
+## Expense API and mutation boundary
 
-## Money and summaries
+| Field | Implemented representation / rule |
+| --- | --- |
+| id | Client/server UUIDv4 for new manual/scan; generated recurring occurrences UUIDv5; response strings; immutable |
+| owner | Token UID in response, not persisted as a mutation-supplied field |
+| date | Required offset-aware timestamp, normalized UTC; patchable |
+| seller/title/description | Nullable text; PATCH null clears; no explicit max text length in expense model |
+| category | Active user category required on create/change; stored ID, not label |
+| type/recurrence | single/null initially; conversion makes recurring/{rule_id}; internal occurrence index hidden from response |
+| amount | Nullable positive <=1,000,000 with <=2 decimals; stored integer cents, response JSON number |
+| currency | EUR literal/default, omitted create allowed; explicit null invalid |
+| source | manual/scan; immutable through expense PATCH |
+| scan_details | Structured stored cents metadata for scan, otherwise null; unconstrained dict in API model, serializer discrepancy below |
+| needs_review | Manual=false; extraction-derived on scan; PATCH bool allows explicit clearing after user review, no automatic clearing when amount/date changes |
+| created_at/updated_at/deleted_at | Server UTC dates; immutable through request; deleted records excluded so returned deleted_at=null |
 
-The wire type is a JSON number with the stated precision/range; no database arithmetic/storage type is provided. Exact internal arithmetic/rounding is a verification concern, not permission to alter the wire contract. Missing amount is not zero; summaries exclude it from totals and expose uncounted.
+Expense create/update and recurring request models forbid extra fields. PATCH requires at least one field; date/category/currency/needs_review cannot explicitly be null, while amount/text can. No scan_details edit API exists. Client model intentionally omits owner/deleted_at and keeps money as cents; default enum handling can tolerate unknown values but does not validate a full server response contract.
 
-Monthly/yearly endpoints compute periods in Europe/Rome and return UTC from/to, total/count/uncounted/by_category; yearly includes 12 by_month entries with zeros. Category percentages are informational and need not sum to 100. Do not compute totals from paginated lists. Count interpretation, zero-total percentages, and detailed rounding remain questions.
+## Money and scan metadata
 
-## Category and catalog
+[Money helper](../../backend/app/core/money.py) parses Decimal from input, normalizes comma/dot separator styles, quantizes ROUND_HALF_UP to 0.01 and rejects original precision beyond2 decimals, non-finite/bool/zero/negative/over-limit values. Exact integer cents are summed; JSON response serialization converts to number. Request OpenAPI allows numeric strings as well as numbers/null; schema does not fully express custom bounds/precision.
 
-Category: id, name, optional icon/color free strings, catalog_id, is_other. IDs are server generated. Active categories appear in category lists; historical archived categories can still appear in summaries when they have expenses.
+Stored scan_details: document_type, items[{description,quantity,unit_price_cents,total_cents}], vat_total_cents, vat_number, payment_method. Scan response maps cents to unit_price/total/vat_total. Ordinary expense read/list/update/conversion currently leaves stored cents keys inside scan_details; this violates the handoff shape and the client parser expectation. See [contracts](contracts.md) and Q-25. Quantity currently reuses positive two-decimal money parsing, so weighted quantities with finer precision become null/review. Zero VAT likewise becomes null/review. Extracted non-EUR currency is ignored rather than rejected/converted (Q-29).
 
-Catalog IDs: groceries, dining_out, transport, housing, bills, health, entertainment, shopping, travel, education, subscriptions. Presets essential_4 and complete_6 are onboarding shortcuts; source lists their content in [contracts](contracts.md).
+Extraction schema requires declared nullable fields and document_type enum, but now ignores additional fields after the Gemini schema fix in b6d984e (extra=forbid removed). Category IDs are rechecked against the user's active list; unknown goes to Other. Missing/invalid date uses now+review, naive extracted dates get TZ_NAME; missing merchant alone does not force review if amount/date/items are reliable. No provider confidence threshold is stored.
 
-Choose at least two catalog/custom items; Other is added automatically. Maximum 30 and case-insensitive name uniqueness are declared; max counting with Other needs confirmation. Other may be renamed, cannot be deleted, and is fallback for scan classification. Deleting a referenced category is blocked by non-deleted expenses or active recurring rules.
+## Categories and summaries
 
-## RecurringRule and occurrence lifecycle
+Trimmed names1–40 chars, casefold uniqueness among active categories; icons/colors arbitrary nullable strings. At least two selected/custom items before Other, maximum 30 active including Other. Other is identified by is_other, renameable/non-deletable. Archive blocked by live expense or active-rule category reference; the rule usage query does not filter deleted_at. Category validation and later expense/rule writes are separate operations, so concurrent archive/write integrity needs targeted verification.
 
-Rule response: id, frequency (weekly/monthly/yearly), start timestamp, optional inclusive local-date end_date, active, and template (seller/title/description/category/amount/currency). IDs are server generated. Conversion makes the existing expense the first recurring occurrence and creates missed occurrences through today.
+Summaries default to TZ_NAME=Europe/Rome local boundaries and return UTC periods. Integer cents totals exclude nulls; count/category count/month count exclude null amounts; uncounted reports them separately. Percentages rounded to one decimal HALF_UP; zero-total branch0.0; only populated counted categories returned, total-descending. Historical names use get_any (including archived), current names rather than name snapshots; missing category document causes a server error. Yearly always returns 12 zero-inclusive buckets. No persisted rollup or pagination of summaries.
 
-- PATCH of an expense affects that occurrence only.
-- PATCH of a rule changes seller/title/description/category/amount/end_date/active for occurrences not yet created; frequency/start are immutable.
-- Deleting a rule sets active false; existing expenses remain. Deleting an occurrence does not stop a rule.
-- Reactivation skips the paused period. Monthly 31st clamps to month end without shifting the original anchor permanently.
-- Idempotent sync creates missing occurrences, returns created/rules_processed/has_more; call again while has_more.
-- Timezone, leap-year behavior, inactive-rule listing, and edge cases are not invented here.
+## Recurring lifecycle
 
-## User, future concepts, and evidence
+Rule response: id/frequency/start/end_date/active/template(text/category/amount/currency). Internal anchor_tz always Europe/Rome, start stored UTC, end_date local YYYY-MM-DD string. Source expense becomes index 0 unchanged ID; next_index starts1. Occurrence n derives from original local start (not previous date), clamps month/leap-day then returns UTC; UUIDv5 from fixed namespace plus rule ID/index. Generated records have manual source and no scan metadata/review flag. Original scanned index 0 keeps its scan data.
 
-GET /me returns/creates uid/email/display_name/onboarding_completed from Firebase-authenticated identity. No device fingerprint, forwarding address, shared family ownership, budget schema, offline sync object, or email source is defined in the current API. Earlier email/budget milestones remain [deferred roadmap](../product/scope.md), not removed source history.
+Rule PATCH modifies template/end_date/active for records not yet created; frequency/start/currency immutable. DELETE sets active=false without deleted_at, so inactive rules remain listed and reactivatable. Resume stores now and skips earlier indexes, not just a recorded pause interval. Existing expenses/edits/deletes remain untouched by sync; even deleted occurrence docs prevent regeneration. One transaction per rule, at most50 indexes/20 active rules per call; due rules prioritized. The cap has_more behavior is incomplete and client only runs five rounds: see [review](../development/integration-review.md#post-merge-audit-at-b6d984e).
 
-See [contracts](contracts.md), [flows](../product/user-flows.md), [questions](../open-questions.md), and the [backend tracker](../development/backend-tracker.md) for implementation evidence and remaining work.
+See [flows](../product/user-flows.md), [questions](../open-questions.md) and the [backend register](../development/backend-tracker.md) for acceptance gaps; source schemas alone do not prove runtime or live owner isolation.

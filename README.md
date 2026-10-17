@@ -2,7 +2,7 @@
 
 bAIdget is an Android-focused personal expense tracker being developed during a one-day hackathon. The latest API handoff specifies Google sign-in via Firebase Auth, category onboarding, manual/scan expenses, recurring rules, and server monthly/yearly/category summaries. The current scope is online-only and EUR-only; email, budgets and other extensions are deferred. See [scope and milestones](_Wiki/product/scope.md).
 
-The repository contains a partial Flutter client (auth/onboarding/gallery upload/read-only detail/settings) and a FastAPI backend with health/auth/profile slices. The default app uses fake auth and an in-memory mock; backend categories, expenses, OCR, summaries and recurrence remain planned. Real Firebase configuration, complete committed OpenAPI and deployment are not available. See [current state](_Wiki/current-state.md) and [integration review](_Wiki/development/integration-review.md) for actual evidence and checks.
+The repository contains a partial Flutter client (auth/onboarding/gallery upload/read-only detail/settings) and FastAPI source for every MVP handoff domain: profile, categories, expense CRUD, Gemini scan, summaries and recurring rules/sync. The default app still uses fake auth and an in-memory mock. Committed OpenAPI, backend CI, Cloud Run deployment/bootstrap and a service URL now exist. Mobile Firebase configuration and remaining feature UI are incomplete; current full-suite/build validation is pending and audit service probes returned 500/503. See [current state](_Wiki/current-state.md), [audit inventory](_Wiki/development/repository-audit.md), [current review](_Wiki/development/integration-review.md#post-merge-audit-at-b6d984e) and [infrastructure](_Wiki/engineering/infrastructure.md).
 
 ## Start here
 
@@ -14,9 +14,9 @@ The repository contains a partial Flutter client (auth/onboarding/gallery upload
 
 All project documentation and code comments must be written in English. Product localization is a separate decision.
 
-## Running the scaffold
+## Running the client
 
-The Flutter package is at the repository root. Use a Flutter SDK compatible with the Dart constraint `^3.13.4` in [pubspec.yaml](pubspec.yaml); an exact Flutter release is not pinned. With Flutter and the target platform tools available, run from this directory:
+The Flutter package is at the repository root. Use a Flutter SDK compatible with the Dart constraint `^3.13.4` in [pubspec.yaml](pubspec.yaml); the lockfile requires Flutter >=3.47.0, and an exact release is not pinned. With Flutter and the target platform tools available, run from this directory:
 
 ```sh
 flutter pub get
@@ -25,7 +25,7 @@ flutter test
 flutter run
 ```
 
-Flutter commands have not been executed in this session because Flutter/Dart are unavailable. Current [API/model tests](test/api_test.dart) and [widget flows](test/app_flow_test.dart) use mocks; they do not establish real backend integration. Android is the target; other generated runners do not establish product support. See [backend setup](backend/README.md) for emulator-only Python checks and [contributing](_Wiki/development/contributing.md) for the synthetic demo and toolchain limits.
+Flutter commands were not executed in the reconciliation audit because Flutter/Dart were unavailable in its checked PATH. Current [API/model tests](test/api_test.dart) and [widget flows](test/app_flow_test.dart) use mocks; they do not establish real backend integration. Android is the target; other generated runners do not establish product support. See [backend setup](backend/README.md) for emulator-only Python checks and [contributing](_Wiki/development/contributing.md) for the synthetic demo and toolchain limits.
 
 ## Flutter resources
 

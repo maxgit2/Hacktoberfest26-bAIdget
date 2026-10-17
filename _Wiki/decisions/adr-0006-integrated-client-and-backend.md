@@ -9,9 +9,10 @@ updated: 2026-10-17
 - Decision status: **accepted for the committed implementation/tooling now integrated**; future backend proposals are not independently approved by this record.
 - Date: 2026-10-17.
 - Authority/evidence: initiator authorized downloading/reviewing dev, merging to main, then committing/pushing all changes. Main frontend is 6d9baea; dev backend is 18c0d19. [Integration source record](../raw/2026-10-17-integration-source-record.md) pins the evidence.
+- Later evidence: [ADR-0007](adr-0007-merged-backend-baseline.md) extends this historical inventory to the full merged backend, domain persistence, extraction and deployment artifacts at b6d984e. Future-at-this-merge statements below are not the current feature inventory.
 - Relationship: [ADR-0005](adr-0005-api-handoff-baseline.md) remains the target API contract; [ADR-0003](adr-0003-flutter-scaffold.md) is historical scaffold evidence, not current feature inventory.
 
-## Observed choices and consequences
+## Observed choices and consequences at the initial integration
 
 The client now uses Riverpod, Dio, preferences, Google/Firebase Auth adapters, UUID scan retry keys and gallery compression. Empty API URL/fake auth are deliberate development defaults. The [frontend handoff](../../docs/frontend-handoff.md) explicitly adds English UI and gallery-only input; backend handoff remains otherwise aligned. No camera implementation is required by the current frontend decision.
 

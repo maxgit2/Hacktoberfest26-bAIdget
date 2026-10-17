@@ -7,29 +7,33 @@ owner: unassigned
 
 # Backend activity and milestone tracker
 
-Canonical FastAPI register. Integration of dev 18c0d19 delivers slices 00/01; the earlier source-absent inventory/testing-query correction is now reconciled. [Backend tasks](../../backend/specs/tasks/00-scaffold.md) describe future work, not completed features. Owners are unassigned; executor labels in source plans do not assign a human owner. Use [maintenance](../maintenance.md), [review](integration-review.md), [contracts](../engineering/contracts.md).
+Reconciled at main `b6d984e`; slices00–07 now have source and tests. `unverified` below means implementation exists but the complete completion gate was not executed/proven by this audit, not that the feature is absent. Earlier14-test success covered auth/profile only. Owners unassigned; source executor labels are not current assignments. [Review](integration-review.md#post-merge-audit-at-b6d984e), [maintenance](../maintenance.md), [contracts](../engineering/contracts.md).
 
 | Milestone | Gate | Current state |
 | --- | --- | --- |
-| BE-M0 | Handoff plus runnable source and complete schema | Source/manifests/partial generated schema present; complete export missing |
-| BE-M1 | Firebase ownership and profile/categories | Auth/profile source present; categories absent |
-| BE-M2 | Expense CRUD/idempotency/extraction | Not implemented (slices 03/06) |
-| BE-M3 | Recurrence/summary accounting | Not implemented (slices 04/05) |
-| BE-M4 | Complete reproducible acceptance and delivery | Local partial checks; full API/container/deployment still open |
+| BE-M0 | Handoff plus runnable source and complete matching schema | Source, commands and snapshot present; static route match passed; runtime regeneration pending |
+| BE-M1 | Firebase ownership and profile/categories | Auth/profile earlier emulator evidence; categories code/tests present, full current validation pending |
+| BE-M2 | Expense CRUD/idempotency/extraction | Code/tests present, serializer/currency/retry issues recorded, runtime/provider acceptance pending |
+| BE-M3 | Recurrence/summary accounting | Code/tests present; sync completion issue and full-suite acceptance open |
+| BE-M4 | Complete reproducible acceptance and delivery | CI/deploy artifacts present; public endpoint service errors and current runtime gates open |
 
 | ID | Milestone | Status | Owner | Activity / completion gate | Evidence / dependency |
 | --- | --- | --- | --- | --- | --- |
-| BE-01 | BE-M0 | done | Unassigned | Preserve handoff and canonical documentation | [SRC-004](../raw/2026-10-17-frontend-handoff.md), ADR-0005, current contract/trackers |
-| BE-02 | BE-M0 | in-progress | Unassigned | Source/runtime/start commands and complete matching OpenAPI delivered | backend/ now present; Conda Python 3.12 manifest, README, /v1/openapi.json partial runtime schema; complete snapshot planned slice 07, host/config missing |
-| BE-03 | BE-M1 | done | Unassigned | Verify current Firebase-token/profile ownership, repeat/concurrent provisioning and two-user isolation; future domains tested in their own gates | Local emulator suite: 14 passed, independently repeated; bounded contention repair and two new regressions verified. [Review](integration-review.md); categories remain BE-04 |
-| BE-04 | BE-M1 | todo | Unassigned | Catalog/presets/onboarding/category CRUD/constraints/Other and ownership tests | Slice 02 is a plan only; no category router/repository/model/tests |
-| BE-05 | BE-M2 | todo | Unassigned | Expense schema/UUID retries, cents/precision, time/nulls/filter/cursor/delete and owner tests | Slice 03 planned; no expense code; internal storage proposals not implemented |
-| BE-06 | BE-M2 | todo | Unassigned | Image validation/rate/error/provider handling, saved review and no-retention tests | Slice 06 planned; google-genai/Pillow/env declarations only, no extraction code |
-| BE-07 | BE-M3 | todo | Unassigned | Rule conversion/occurrences/sync/idempotency/pause/month-end and isolation | Slice 05 planned; deterministic IDs/Rome/caps are documented proposals, not code |
-| BE-08 | BE-M3 | todo | Unassigned | Server summary counts/nulls/currency/Rome DST/archived category/12-month behavior | Slice 04 planned; no summary code; rounding/count proposals need evidence |
-| BE-09 | BE-M4 | in-progress | Unassigned | Health/auth errors/schema metadata plus future pagination/rate headers | /health and /v1/me exist; stable normal error envelope tested/probed, unsupported-method mapping issue BE-12; no complete OpenAPI export |
-| BE-10 | BE-M4 | in-progress | Unassigned | Reproducible full backend test/handoff evidence, covering each implemented slice and future endpoint acceptance | Existing auth/profile/error/health tests and local Ruff; full feature tests, Docker/hosted CI/deploy unverified; details in review |
-| BE-11 | Future | deferred | Unassigned | Email/budgets/family/bulk/voice/currencies/offline and unsupported weekly/chart extensions | Contract excludes current scope |
-| BE-12 | BE-M4 | todo | Unassigned | Agree/fix unsupported-method error mapping without inventing contract codes | Reproduced POST /health and POST /v1/me as 500 internal_error due HTTPException mapping; source handoff lacks 405 code, record contract decision before changing |
+| BE-01 | BE-M0 | done | Unassigned | Preserve handoff and canonical documentation | SRC-004/ADR-0005 preserved; SRC-006 reconciles later source |
+| BE-02 | BE-M0 | in-progress | Unassigned | Source/start/schema/address delivery and matching runtime schema | backend/openapi.json:15 paths/21 operations, all 20 handoff operations present; router static match passed; runtime export/snapshot test unrun, INF-10 |
+| BE-03 | BE-M1 | done | Unassigned | Earlier Firebase-token/profile provisioning, concurrency and two-user isolation gate | Historical14 passing emulator tests in earlier review; no claim full current suite passed |
+| BE-04 | BE-M1 | unverified | Unassigned | Categories/catalog/onboarding/CRUD/Other/ownership acceptance | Models/router/services/repository and test_categories.py now exist; min 2, total 30 incl Other; current emulator suite unrun; client limit FE-15 |
+| BE-05 | BE-M2 | unverified | Unassigned | Expense CRUD/UUID/money/time/nulls/filter/cursor/delete/isolation acceptance | Full code/test_expenses.py; cents probes passed, test suite unrun; BE-13 serialization remains |
+| BE-06 | BE-M2 | unverified | Unassigned | Image validation/quota/provider/errors/review/privacy acceptance | imaging/llm/scan/rate_limit code, mocked test_scan/test_imaging/schema; ten text-only eval cases; no live extraction/accuracy; BE-15/16 |
+| BE-07 | BE-M3 | unverified | Unassigned | Conversion/sync/idempotency/pause/month-end/isolation acceptance | recurrence/recurring/rules code and tests; isolated UTC date/ID probes passed; Rome emulator tests unrun; BE-14 |
+| BE-08 | BE-M3 | unverified | Unassigned | Exact summaries/null/count/DST/history/12-month acceptance | summary service/models/router and test_summary.py now present; count excludes nulls; full checks unrun |
+| BE-09 | BE-M4 | in-progress | Unassigned | Health/errors/OpenAPI/pagination/rate metadata accepted | operation IDs, responses/examples and snapshot exist; AST route match passed; BE-12/13, INF-10 |
+| BE-10 | BE-M4 | in-progress | Unassigned | Full reproducible lint/emulator/contract/container/handoff evidence | 72 backend test functions before parametrization; CI definition exists, dependencies absent locally, no hosted evidence collected |
+| BE-11 | Future | deferred | Unassigned | Email/budgets/family/bulk/voice/currencies/offline/weekly extensions | No implemented routes; outside current contract |
+| BE-12 | BE-M4 | todo | Unassigned | Resolve unsupported-method error mapping | HTTP handler still converts405 to 500; earlier reproduction retained; agree code/status and add regression |
+| BE-13 | BE-M2 | todo | Unassigned | Unify scan_details shape across upload/read/list/PATCH/conversion | A-01: _scan_response converts cents, _expense_response does not; isolated function-body probe reproduced drift; test reloads |
+| BE-14 | BE-M3 | todo | Unassigned | Make sync has_more express actionable remaining work | A-03:21 non-due fake rules →0 created/20 processed/has_more=true using actual sync body; coordinate client cap/refresh Q-21/26 |
+| BE-15 | BE-M2 | todo | Unassigned | Agree and enforce extracted currency/quantity/VAT semantics | A-06: currency ignored→EUR, quantities reuse money precision, zero VAT invalid; Q-29/30 |
+| BE-16 | BE-M2 | todo | Unassigned | Verify concurrent/deleted-ID scan retry costs and failure order | A-07: deleted get returnsNone before paid extraction, final tombstone404; concurrent fresh IDs can invoke provider twice; no runtime reproduction claimed |
 
-Finish slice 02 next; preserve source specs and surface ambiguities rather than guessing. Runtime evidence closes only the corresponding implemented slice, never categories/OCR by implication. Cross-register dependencies: [frontend](frontend-tracker.md), [infrastructure](infrastructure-tracker.md); append status changes to [log](../log.md).
+No feature milestone is done merely because route/source/tests exist. Prioritize healthy runtime evidence, response compatibility and current full suite, then client integration. Append transitions to [log](../log.md); dependent [frontend](frontend-tracker.md) and [infrastructure](infrastructure-tracker.md) gates are reconciled.
