@@ -10,7 +10,7 @@ The machine-readable contract is `openapi.json` (exported from FastAPI). This fi
 
 bAIdget is a personal expense tracker. The user signs in with Google, picks expense categories, and adds expenses manually or by scanning a receipt / a screenshot of a payment. Expenses can be marked as recurring. The app shows monthly / yearly summaries and per-category totals. Each user only sees their own data.
 
-- Base URL: `https://<TBD>/v1` (provided by the backend owner; a local emulator URL is available for development)
+- Base URL: `https://baidget-api-voiguesqbq-ew.a.run.app/v1` (Cloud Run, europe-west1; a local emulator URL is available for development)
 - Health check: `GET /health` (no auth)
 - Currency: **EUR only** for now. The `currency` field exists and must be `"EUR"`.
 - Online-only: the app needs a connection. There is no sync protocol.
