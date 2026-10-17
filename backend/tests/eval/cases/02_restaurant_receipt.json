@@ -1,0 +1,4 @@
+{
+  "image_text": ["Sample Bistro", "2026-09-14 20:10", "Dinner 24.50", "TOTAL 24.50"],
+  "expected": {"document_type": "receipt", "seller": "Sample Bistro", "date": "2026-09-14T20:10:00", "total": "24.50", "category_id": "cat_dining"}
+}

@@ -1,0 +1,3780 @@
+{
+  "components": {
+    "schemas": {
+      "Body_scanExpense": {
+        "properties": {
+          "id": {
+            "anyOf": [
+              {
+                "format": "uuid4",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "image": {
+            "contentMediaType": "application/octet-stream",
+            "title": "Image",
+            "type": "string"
+          }
+        },
+        "required": [
+          "image"
+        ],
+        "title": "Body_scanExpense",
+        "type": "object"
+      },
+      "CatalogItem": {
+        "properties": {
+          "icon": {
+            "title": "Icon",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "icon"
+        ],
+        "title": "CatalogItem",
+        "type": "object"
+      },
+      "CatalogPreset": {
+        "properties": {
+          "catalog_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Catalog Ids",
+            "type": "array"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "catalog_ids"
+        ],
+        "title": "CatalogPreset",
+        "type": "object"
+      },
+      "CatalogResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CatalogItem"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "presets": {
+            "items": {
+              "$ref": "#/components/schemas/CatalogPreset"
+            },
+            "title": "Presets",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items",
+          "presets"
+        ],
+        "title": "CatalogResponse",
+        "type": "object"
+      },
+      "CategoryCreate": {
+        "properties": {
+          "color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color"
+          },
+          "icon": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Icon"
+          },
+          "name": {
+            "maxLength": 40,
+            "minLength": 1,
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "name"
+        ],
+        "title": "CategoryCreate",
+        "type": "object"
+      },
+      "CategoryListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "CategoryListResponse",
+        "type": "object"
+      },
+      "CategoryResponse": {
+        "properties": {
+          "catalog_id": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Catalog Id"
+          },
+          "color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color"
+          },
+          "icon": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Icon"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "is_other": {
+            "title": "Is Other",
+            "type": "boolean"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          }
+        },
+        "required": [
+          "id",
+          "name",
+          "icon",
+          "color",
+          "catalog_id",
+          "is_other"
+        ],
+        "title": "CategoryResponse",
+        "type": "object"
+      },
+      "CategorySummary": {
+        "properties": {
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "name": {
+            "title": "Name",
+            "type": "string"
+          },
+          "percentage": {
+            "title": "Percentage",
+            "type": "number"
+          },
+          "total": {
+            "title": "Total",
+            "type": "number"
+          }
+        },
+        "required": [
+          "category",
+          "name",
+          "total",
+          "count",
+          "percentage"
+        ],
+        "title": "CategorySummary",
+        "type": "object"
+      },
+      "CategoryUpdate": {
+        "properties": {
+          "color": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Color"
+          },
+          "icon": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Icon"
+          },
+          "name": {
+            "anyOf": [
+              {
+                "maxLength": 40,
+                "minLength": 1,
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Name"
+          }
+        },
+        "title": "CategoryUpdate",
+        "type": "object"
+      },
+      "ErrorBody": {
+        "properties": {
+          "code": {
+            "title": "Code",
+            "type": "string"
+          },
+          "details": {
+            "additionalProperties": true,
+            "title": "Details",
+            "type": "object"
+          },
+          "message": {
+            "title": "Message",
+            "type": "string"
+          }
+        },
+        "required": [
+          "code",
+          "message",
+          "details"
+        ],
+        "title": "ErrorBody",
+        "type": "object"
+      },
+      "ErrorResponse": {
+        "properties": {
+          "error": {
+            "$ref": "#/components/schemas/ErrorBody"
+          }
+        },
+        "required": [
+          "error"
+        ],
+        "title": "ErrorResponse",
+        "type": "object"
+      },
+      "ExpenseCreate": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "currency": {
+            "const": "EUR",
+            "default": "EUR",
+            "title": "Currency",
+            "type": "string"
+          },
+          "date": {
+            "format": "date-time",
+            "title": "Date",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "id": {
+            "anyOf": [
+              {
+                "format": "uuid",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Id"
+          },
+          "seller": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seller"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "required": [
+          "date",
+          "category"
+        ],
+        "title": "ExpenseCreate",
+        "type": "object"
+      },
+      "ExpenseListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/ExpenseResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "required": [
+          "items",
+          "next_cursor"
+        ],
+        "title": "ExpenseListResponse",
+        "type": "object"
+      },
+      "ExpenseResponse": {
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "created_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Created At"
+          },
+          "currency": {
+            "const": "EUR",
+            "title": "Currency",
+            "type": "string"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "deleted_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Deleted At"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "needs_review": {
+            "title": "Needs Review",
+            "type": "boolean"
+          },
+          "owner": {
+            "title": "Owner",
+            "type": "string"
+          },
+          "recurrence": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/RecurrenceResponse"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "scan_details": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Scan Details"
+          },
+          "seller": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seller"
+          },
+          "source": {
+            "enum": [
+              "manual",
+              "scan"
+            ],
+            "title": "Source",
+            "type": "string"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          },
+          "type": {
+            "enum": [
+              "single",
+              "recurring"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "updated_at": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Updated At"
+          }
+        },
+        "required": [
+          "id",
+          "owner",
+          "date",
+          "seller",
+          "title",
+          "description",
+          "category",
+          "type",
+          "recurrence",
+          "amount",
+          "currency",
+          "source",
+          "scan_details",
+          "needs_review",
+          "created_at",
+          "updated_at",
+          "deleted_at"
+        ],
+        "title": "ExpenseResponse",
+        "type": "object"
+      },
+      "ExpenseUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "currency": {
+            "anyOf": [
+              {
+                "const": "EUR",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Currency"
+          },
+          "date": {
+            "anyOf": [
+              {
+                "format": "date-time",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Date"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "needs_review": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Needs Review"
+          },
+          "seller": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seller"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "title": "ExpenseUpdate",
+        "type": "object"
+      },
+      "MakeRecurringRequest": {
+        "additionalProperties": false,
+        "properties": {
+          "end_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "frequency": {
+            "enum": [
+              "weekly",
+              "monthly",
+              "yearly"
+            ],
+            "title": "Frequency",
+            "type": "string"
+          }
+        },
+        "required": [
+          "frequency"
+        ],
+        "title": "MakeRecurringRequest",
+        "type": "object"
+      },
+      "MakeRecurringResponse": {
+        "properties": {
+          "created_occurrences": {
+            "title": "Created Occurrences",
+            "type": "integer"
+          },
+          "expense": {
+            "$ref": "#/components/schemas/ExpenseResponse"
+          },
+          "rule": {
+            "$ref": "#/components/schemas/RecurringRuleResponse"
+          }
+        },
+        "required": [
+          "rule",
+          "expense",
+          "created_occurrences"
+        ],
+        "title": "MakeRecurringResponse",
+        "type": "object"
+      },
+      "MonthSummary": {
+        "properties": {
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "month": {
+            "title": "Month",
+            "type": "string"
+          },
+          "total": {
+            "title": "Total",
+            "type": "number"
+          }
+        },
+        "required": [
+          "month",
+          "total",
+          "count"
+        ],
+        "title": "MonthSummary",
+        "type": "object"
+      },
+      "MonthlySummaryResponse": {
+        "properties": {
+          "by_category": {
+            "items": {
+              "$ref": "#/components/schemas/CategorySummary"
+            },
+            "title": "By Category",
+            "type": "array"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "currency": {
+            "const": "EUR",
+            "default": "EUR",
+            "title": "Currency",
+            "type": "string"
+          },
+          "period": {
+            "$ref": "#/components/schemas/SummaryPeriod"
+          },
+          "total": {
+            "title": "Total",
+            "type": "number"
+          },
+          "uncounted": {
+            "title": "Uncounted",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "period",
+          "total",
+          "count",
+          "uncounted",
+          "by_category"
+        ],
+        "title": "MonthlySummaryResponse",
+        "type": "object"
+      },
+      "OnboardingRequest": {
+        "properties": {
+          "catalog_ids": {
+            "items": {
+              "type": "string"
+            },
+            "title": "Catalog Ids",
+            "type": "array"
+          },
+          "custom": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryCreate"
+            },
+            "title": "Custom",
+            "type": "array"
+          }
+        },
+        "title": "OnboardingRequest",
+        "type": "object"
+      },
+      "OnboardingResponse": {
+        "properties": {
+          "categories": {
+            "items": {
+              "$ref": "#/components/schemas/CategoryResponse"
+            },
+            "title": "Categories",
+            "type": "array"
+          }
+        },
+        "required": [
+          "categories"
+        ],
+        "title": "OnboardingResponse",
+        "type": "object"
+      },
+      "RecurrenceResponse": {
+        "properties": {
+          "rule_id": {
+            "title": "Rule Id",
+            "type": "string"
+          }
+        },
+        "required": [
+          "rule_id"
+        ],
+        "title": "RecurrenceResponse",
+        "type": "object"
+      },
+      "RecurringRuleListResponse": {
+        "properties": {
+          "items": {
+            "items": {
+              "$ref": "#/components/schemas/RecurringRuleResponse"
+            },
+            "title": "Items",
+            "type": "array"
+          }
+        },
+        "required": [
+          "items"
+        ],
+        "title": "RecurringRuleListResponse",
+        "type": "object"
+      },
+      "RecurringRuleResponse": {
+        "properties": {
+          "active": {
+            "title": "Active",
+            "type": "boolean"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "frequency": {
+            "enum": [
+              "weekly",
+              "monthly",
+              "yearly"
+            ],
+            "title": "Frequency",
+            "type": "string"
+          },
+          "id": {
+            "title": "Id",
+            "type": "string"
+          },
+          "start": {
+            "title": "Start",
+            "type": "string"
+          },
+          "template": {
+            "$ref": "#/components/schemas/RecurringTemplateResponse"
+          }
+        },
+        "required": [
+          "id",
+          "frequency",
+          "start",
+          "end_date",
+          "active",
+          "template"
+        ],
+        "title": "RecurringRuleResponse",
+        "type": "object"
+      },
+      "RecurringRuleUpdate": {
+        "additionalProperties": false,
+        "properties": {
+          "active": {
+            "anyOf": [
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Active"
+          },
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "category": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Category"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "end_date": {
+            "anyOf": [
+              {
+                "format": "date",
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "End Date"
+          },
+          "seller": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seller"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "title": "RecurringRuleUpdate",
+        "type": "object"
+      },
+      "RecurringSyncResponse": {
+        "properties": {
+          "created": {
+            "title": "Created",
+            "type": "integer"
+          },
+          "has_more": {
+            "title": "Has More",
+            "type": "boolean"
+          },
+          "rules_processed": {
+            "title": "Rules Processed",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "created",
+          "rules_processed",
+          "has_more"
+        ],
+        "title": "RecurringSyncResponse",
+        "type": "object"
+      },
+      "RecurringTemplateResponse": {
+        "properties": {
+          "amount": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Amount"
+          },
+          "category": {
+            "title": "Category",
+            "type": "string"
+          },
+          "currency": {
+            "const": "EUR",
+            "title": "Currency",
+            "type": "string"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          },
+          "seller": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Seller"
+          },
+          "title": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Title"
+          }
+        },
+        "required": [
+          "seller",
+          "title",
+          "description",
+          "category",
+          "amount",
+          "currency"
+        ],
+        "title": "RecurringTemplateResponse",
+        "type": "object"
+      },
+      "SummaryPeriod": {
+        "properties": {
+          "from": {
+            "title": "From",
+            "type": "string"
+          },
+          "to": {
+            "title": "To",
+            "type": "string"
+          },
+          "type": {
+            "enum": [
+              "month",
+              "year"
+            ],
+            "title": "Type",
+            "type": "string"
+          },
+          "value": {
+            "title": "Value",
+            "type": "string"
+          }
+        },
+        "required": [
+          "type",
+          "value",
+          "from",
+          "to"
+        ],
+        "title": "SummaryPeriod",
+        "type": "object"
+      },
+      "UserResponse": {
+        "properties": {
+          "display_name": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Display Name"
+          },
+          "email": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Email"
+          },
+          "onboarding_completed": {
+            "title": "Onboarding Completed",
+            "type": "boolean"
+          },
+          "uid": {
+            "title": "Uid",
+            "type": "string"
+          }
+        },
+        "required": [
+          "uid",
+          "email",
+          "display_name",
+          "onboarding_completed"
+        ],
+        "title": "UserResponse",
+        "type": "object"
+      },
+      "YearlySummaryResponse": {
+        "properties": {
+          "by_category": {
+            "items": {
+              "$ref": "#/components/schemas/CategorySummary"
+            },
+            "title": "By Category",
+            "type": "array"
+          },
+          "by_month": {
+            "items": {
+              "$ref": "#/components/schemas/MonthSummary"
+            },
+            "title": "By Month",
+            "type": "array"
+          },
+          "count": {
+            "title": "Count",
+            "type": "integer"
+          },
+          "currency": {
+            "const": "EUR",
+            "default": "EUR",
+            "title": "Currency",
+            "type": "string"
+          },
+          "period": {
+            "$ref": "#/components/schemas/SummaryPeriod"
+          },
+          "total": {
+            "title": "Total",
+            "type": "number"
+          },
+          "uncounted": {
+            "title": "Uncounted",
+            "type": "integer"
+          }
+        },
+        "required": [
+          "period",
+          "total",
+          "count",
+          "uncounted",
+          "by_category",
+          "by_month"
+        ],
+        "title": "YearlySummaryResponse",
+        "type": "object"
+      }
+    },
+    "securitySchemes": {
+      "HTTPBearer": {
+        "scheme": "bearer",
+        "type": "http"
+      }
+    }
+  },
+  "info": {
+    "title": "bAIdget API",
+    "version": "0.1.0"
+  },
+  "openapi": "3.1.0",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "healthCheck",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "title": "Response Healthcheck",
+                  "type": "object"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "summary": "Health"
+      }
+    },
+    "/v1/categories": {
+      "get": {
+        "operationId": "listCategories",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Categories",
+        "tags": [
+          "categories"
+        ]
+      },
+      "post": {
+        "operationId": "createCategory",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "category_name_taken": {
+                    "value": {
+                      "error": {
+                        "code": "category_name_taken",
+                        "details": {},
+                        "message": "An active category already has this name"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `category_name_taken`"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "max_categories": {
+                    "value": {
+                      "error": {
+                        "code": "max_categories",
+                        "details": {},
+                        "message": "A maximum of 30 categories is allowed"
+                      }
+                    }
+                  },
+                  "validation_error": {
+                    "value": {
+                      "error": {
+                        "code": "validation_error",
+                        "details": {},
+                        "message": "Request validation failed"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `validation_error`, `max_categories`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create",
+        "tags": [
+          "categories"
+        ]
+      }
+    },
+    "/v1/categories/catalog": {
+      "get": {
+        "operationId": "getCategoryCatalog",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CatalogResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Category Catalog",
+        "tags": [
+          "categories"
+        ]
+      }
+    },
+    "/v1/categories/onboarding": {
+      "post": {
+        "operationId": "onboardCategories",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/OnboardingRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OnboardingResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "already_onboarded": {
+                    "value": {
+                      "error": {
+                        "code": "already_onboarded",
+                        "details": {},
+                        "message": "Onboarding is already complete"
+                      }
+                    }
+                  },
+                  "category_name_taken": {
+                    "value": {
+                      "error": {
+                        "code": "category_name_taken",
+                        "details": {},
+                        "message": "An active category already has this name"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `already_onboarded`, `category_name_taken`"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "max_categories": {
+                    "value": {
+                      "error": {
+                        "code": "max_categories",
+                        "details": {},
+                        "message": "A maximum of 30 categories is allowed"
+                      }
+                    }
+                  },
+                  "min_categories": {
+                    "value": {
+                      "error": {
+                        "code": "min_categories",
+                        "details": {},
+                        "message": "Choose at least two categories"
+                      }
+                    }
+                  },
+                  "validation_error": {
+                    "value": {
+                      "error": {
+                        "code": "validation_error",
+                        "details": {},
+                        "message": "Request validation failed"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `validation_error`, `min_categories`, `max_categories`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Onboarding",
+        "tags": [
+          "categories"
+        ]
+      }
+    },
+    "/v1/categories/{category_id}": {
+      "delete": {
+        "operationId": "deleteCategory",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "category_id",
+            "required": true,
+            "schema": {
+              "title": "Category Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "code": "not_found",
+                        "details": {},
+                        "message": "Resource not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `not_found`"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "cannot_modify_other": {
+                    "value": {
+                      "error": {
+                        "code": "cannot_modify_other",
+                        "details": {},
+                        "message": "The Other category cannot be deleted"
+                      }
+                    }
+                  },
+                  "category_in_use": {
+                    "value": {
+                      "error": {
+                        "code": "category_in_use",
+                        "details": {},
+                        "message": "The category is currently in use"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `category_in_use`, `cannot_modify_other`"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "validation_error": {
+                    "value": {
+                      "error": {
+                        "code": "validation_error",
+                        "details": {},
+                        "message": "Request validation failed"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `validation_error`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete",
+        "tags": [
+          "categories"
+        ]
+      },
+      "patch": {
+        "operationId": "updateCategory",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "category_id",
+            "required": true,
+            "schema": {
+              "title": "Category Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CategoryUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CategoryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "code": "not_found",
+                        "details": {},
+                        "message": "Resource not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `not_found`"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "category_name_taken": {
+                    "value": {
+                      "error": {
+                        "code": "category_name_taken",
+                        "details": {},
+                        "message": "An active category already has this name"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `category_name_taken`"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "validation_error": {
+                    "value": {
+                      "error": {
+                        "code": "validation_error",
+                        "details": {},
+                        "message": "Request validation failed"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `validation_error`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update",
+        "tags": [
+          "categories"
+        ]
+      }
+    },
+    "/v1/expenses": {
+      "get": {
+        "operationId": "listExpenses",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "from",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "From"
+            }
+          },
+          {
+            "in": "query",
+            "name": "to",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "format": "date-time",
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "To"
+            }
+          },
+          {
+            "in": "query",
+            "name": "category",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Category"
+            }
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "enum": [
+                    "single",
+                    "recurring"
+                  ],
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Type"
+            }
+          },
+          {
+            "in": "query",
+            "name": "needs_review",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "boolean"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Needs Review"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "required": false,
+            "schema": {
+              "default": 50,
+              "maximum": 100,
+              "minimum": 1,
+              "title": "Limit",
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "cursor",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "validation_error": {
+                    "value": {
+                      "error": {
+                        "code": "validation_error",
+                        "details": {},
+                        "message": "Request validation failed"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `validation_error`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List ",
+        "tags": [
+          "expenses"
+        ]
+      },
+      "post": {
+        "operationId": "createExpense",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpenseCreate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseResponse"
+                }
+              }
+            },
+            "description": "Existing expense returned for an idempotent retry."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "code": "not_found",
+                        "details": {},
+                        "message": "Resource not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `not_found`"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "category_not_found": {
+                    "value": {
+                      "error": {
+                        "code": "category_not_found",
+                        "details": {},
+                        "message": "Category not found or archived"
+                      }
+                    }
+                  },
+                  "validation_error": {
+                    "value": {
+                      "error": {
+                        "code": "validation_error",
+                        "details": {},
+                        "message": "Request validation failed"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `validation_error`, `category_not_found`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create",
+        "tags": [
+          "expenses"
+        ]
+      }
+    },
+    "/v1/expenses/scan": {
+      "post": {
+        "operationId": "scanExpense",
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/Body_scanExpense"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseResponse"
+                }
+              }
+            },
+            "description": "Existing expense returned for an idempotent retry."
+          },
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "code": "not_found",
+                        "details": {},
+                        "message": "Resource not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `not_found`"
+          },
+          "413": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "image_too_large": {
+                    "value": {
+                      "error": {
+                        "code": "image_too_large",
+                        "details": {},
+                        "message": "Image exceeds the size limit"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `image_too_large`"
+          },
+          "415": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unsupported_image_type": {
+                    "value": {
+                      "error": {
+                        "code": "unsupported_image_type",
+                        "details": {},
+                        "message": "Unsupported image type"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unsupported_image_type`"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "category_not_found": {
+                    "value": {
+                      "error": {
+                        "code": "category_not_found",
+                        "details": {},
+                        "message": "Category not found or archived"
+                      }
+                    }
+                  },
+                  "extraction_failed": {
+                    "value": {
+                      "error": {
+                        "code": "extraction_failed",
+                        "details": {},
+                        "message": "Expense extraction failed"
+                      }
+                    }
+                  },
+                  "validation_error": {
+                    "value": {
+                      "error": {
+                        "code": "validation_error",
+                        "details": {},
+                        "message": "Request validation failed"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `validation_error`, `category_not_found`, `extraction_failed`"
+          },
+          "429": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "rate_limited": {
+                    "value": {
+                      "error": {
+                        "code": "rate_limited",
+                        "details": {},
+                        "message": "Too many scans"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `rate_limited`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          },
+          "503": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "extraction_unavailable": {
+                    "value": {
+                      "error": {
+                        "code": "extraction_unavailable",
+                        "details": {},
+                        "message": "Expense extraction is unavailable"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `extraction_unavailable`"
+          },
+          "504": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "extraction_timeout": {
+                    "value": {
+                      "error": {
+                        "code": "extraction_timeout",
+                        "details": {},
+                        "message": "Expense extraction timed out"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `extraction_timeout`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Scan",
+        "tags": [
+          "expenses"
+        ]
+      }
+    },
+    "/v1/expenses/{expense_id}": {
+      "delete": {
+        "operationId": "deleteExpense",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "expense_id",
+            "required": true,
+            "schema": {
+              "title": "Expense Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "code": "not_found",
+                        "details": {},
+                        "message": "Resource not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `not_found`"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "validation_error": {
+                    "value": {
+                      "error": {
+                        "code": "validation_error",
+                        "details": {},
+                        "message": "Request validation failed"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `validation_error`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete",
+        "tags": [
+          "expenses"
+        ]
+      },
+      "get": {
+        "operationId": "getExpense",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "expense_id",
+            "required": true,
+            "schema": {
+              "title": "Expense Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "code": "not_found",
+                        "details": {},
+                        "message": "Resource not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `not_found`"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "validation_error": {
+                    "value": {
+                      "error": {
+                        "code": "validation_error",
+                        "details": {},
+                        "message": "Request validation failed"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `validation_error`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Get",
+        "tags": [
+          "expenses"
+        ]
+      },
+      "patch": {
+        "operationId": "updateExpense",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "expense_id",
+            "required": true,
+            "schema": {
+              "title": "Expense Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ExpenseUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ExpenseResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "code": "not_found",
+                        "details": {},
+                        "message": "Resource not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `not_found`"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "category_not_found": {
+                    "value": {
+                      "error": {
+                        "code": "category_not_found",
+                        "details": {},
+                        "message": "Category not found or archived"
+                      }
+                    }
+                  },
+                  "validation_error": {
+                    "value": {
+                      "error": {
+                        "code": "validation_error",
+                        "details": {},
+                        "message": "Request validation failed"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `validation_error`, `category_not_found`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update",
+        "tags": [
+          "expenses"
+        ]
+      }
+    },
+    "/v1/expenses/{expense_id}/make-recurring": {
+      "post": {
+        "operationId": "makeExpenseRecurring",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "expense_id",
+            "required": true,
+            "schema": {
+              "title": "Expense Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MakeRecurringRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "201": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MakeRecurringResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "code": "not_found",
+                        "details": {},
+                        "message": "Resource not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `not_found`"
+          },
+          "409": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "already_recurring": {
+                    "value": {
+                      "error": {
+                        "code": "already_recurring",
+                        "details": {},
+                        "message": "Expense is already recurring"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `already_recurring`"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "validation_error": {
+                    "value": {
+                      "error": {
+                        "code": "validation_error",
+                        "details": {},
+                        "message": "Request validation failed"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `validation_error`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Create",
+        "tags": [
+          "recurring"
+        ]
+      }
+    },
+    "/v1/me": {
+      "get": {
+        "operationId": "getCurrentUser",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Read Me",
+        "tags": [
+          "user"
+        ]
+      }
+    },
+    "/v1/recurring-rules": {
+      "get": {
+        "operationId": "listRecurringRules",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecurringRuleListResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "List ",
+        "tags": [
+          "recurring"
+        ]
+      }
+    },
+    "/v1/recurring-rules/sync": {
+      "post": {
+        "operationId": "syncRecurringRules",
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecurringSyncResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Sync",
+        "tags": [
+          "recurring"
+        ]
+      }
+    },
+    "/v1/recurring-rules/{rule_id}": {
+      "delete": {
+        "operationId": "deleteRecurringRule",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_id",
+            "required": true,
+            "schema": {
+              "title": "Rule Id",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "code": "not_found",
+                        "details": {},
+                        "message": "Resource not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `not_found`"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "validation_error": {
+                    "value": {
+                      "error": {
+                        "code": "validation_error",
+                        "details": {},
+                        "message": "Request validation failed"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `validation_error`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Delete",
+        "tags": [
+          "recurring"
+        ]
+      },
+      "patch": {
+        "operationId": "updateRecurringRule",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "rule_id",
+            "required": true,
+            "schema": {
+              "title": "Rule Id",
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RecurringRuleUpdate"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RecurringRuleResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "404": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "not_found": {
+                    "value": {
+                      "error": {
+                        "code": "not_found",
+                        "details": {},
+                        "message": "Resource not found"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `not_found`"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "category_not_found": {
+                    "value": {
+                      "error": {
+                        "code": "category_not_found",
+                        "details": {},
+                        "message": "Category not found or archived"
+                      }
+                    }
+                  },
+                  "validation_error": {
+                    "value": {
+                      "error": {
+                        "code": "validation_error",
+                        "details": {},
+                        "message": "Request validation failed"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `validation_error`, `category_not_found`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Update",
+        "tags": [
+          "recurring"
+        ]
+      }
+    },
+    "/v1/summary/monthly": {
+      "get": {
+        "operationId": "getMonthlySummary",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "month",
+            "required": true,
+            "schema": {
+              "pattern": "^\\d{4}-\\d{2}$",
+              "title": "Month",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/MonthlySummaryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "validation_error": {
+                    "value": {
+                      "error": {
+                        "code": "validation_error",
+                        "details": {},
+                        "message": "Request validation failed"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `validation_error`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Monthly",
+        "tags": [
+          "summary"
+        ]
+      }
+    },
+    "/v1/summary/yearly": {
+      "get": {
+        "operationId": "getYearlySummary",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "year",
+            "required": true,
+            "schema": {
+              "pattern": "^\\d{4}$",
+              "title": "Year",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/YearlySummaryResponse"
+                }
+              }
+            },
+            "description": "Successful Response"
+          },
+          "401": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "unauthenticated": {
+                    "value": {
+                      "error": {
+                        "code": "unauthenticated",
+                        "details": {},
+                        "message": "Authentication required"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `unauthenticated`"
+          },
+          "422": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "validation_error": {
+                    "value": {
+                      "error": {
+                        "code": "validation_error",
+                        "details": {},
+                        "message": "Request validation failed"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `validation_error`"
+          },
+          "500": {
+            "content": {
+              "application/json": {
+                "examples": {
+                  "internal_error": {
+                    "value": {
+                      "error": {
+                        "code": "internal_error",
+                        "details": {},
+                        "message": "Internal server error"
+                      }
+                    }
+                  }
+                },
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                }
+              }
+            },
+            "description": "Possible errors: `internal_error`"
+          }
+        },
+        "security": [
+          {
+            "HTTPBearer": []
+          }
+        ],
+        "summary": "Yearly",
+        "tags": [
+          "summary"
+        ]
+      }
+    }
+  }
+}

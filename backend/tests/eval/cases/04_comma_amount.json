@@ -1,0 +1,4 @@
+{
+  "image_text": ["Example Electronics", "16/10/2026", "Device 1.234,56", "TOTALE 1.234,56 EUR"],
+  "expected": {"document_type": "receipt", "seller": "Example Electronics", "total": "1.234,56", "currency": "EUR"}
+}

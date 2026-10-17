@@ -1,0 +1,71 @@
+name: Deploy backend
+
+# Deploys to Cloud Run after CI passes on main. Keyless auth via Workload Identity Federation.
+# Repo variables: GCP_PROJECT_ID, GCP_REGION, WIF_PROVIDER, DEPLOY_SA (set by backend/deploy/bootstrap-gcp.sh).
+# The service is public at the network level on purpose: the Flutter app calls it directly and every
+# endpoint except /health requires a Firebase ID token (verified in app/core/auth.py).
+on:
+  workflow_run:
+    workflows: [CI]
+    branches: [main]
+    types: [completed]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-backend
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    env:
+      PROJECT: ${{ vars.GCP_PROJECT_ID }}
+      REGION: ${{ vars.GCP_REGION }}
+      IMAGE: ${{ vars.GCP_REGION }}-docker.pkg.dev/${{ vars.GCP_PROJECT_ID }}/baidget/api:${{ github.event.workflow_run.head_sha || github.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.sha }}
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ vars.WIF_PROVIDER }}
+          service_account: ${{ vars.DEPLOY_SA }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Build and push image
+        working-directory: backend
+        run: |
+          gcloud auth configure-docker "$REGION-docker.pkg.dev" --quiet
+          docker build -t "$IMAGE" .
+          docker push "$IMAGE"
+
+      - name: Deploy to Cloud Run
+        run: |
+          gcloud run deploy baidget-api \
+            --project "$PROJECT" --region "$REGION" --image "$IMAGE" \
+            --service-account "baidget-api@$PROJECT.iam.gserviceaccount.com" \
+            --allow-unauthenticated \
+            --min-instances 0 --max-instances 2 \
+            --cpu 1 --memory 512Mi --concurrency 40 --timeout 60 \
+            --set-env-vars "GOOGLE_CLOUD_PROJECT=$PROJECT,GEMINI_MODEL=gemini-flash-latest" \
+            --set-secrets GEMINI_API_KEY=gemini-api-key:latest
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Deploy Firestore rules and indexes
+        working-directory: backend
+        run: npx --yes firebase-tools@15 deploy --only firestore --project "$PROJECT" --non-interactive
+
+      - name: Smoke test
+        run: |
+          URL=$(gcloud run services describe baidget-api --project "$PROJECT" --region "$REGION" --format 'value(status.url)')
+          curl -fsS "$URL/health"
+          test "$(curl -s -o /dev/null -w '%{http_code}' "$URL/v1/me")" = 401

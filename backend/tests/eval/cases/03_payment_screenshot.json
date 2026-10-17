@@ -1,0 +1,4 @@
+{
+  "image_text": ["Payment complete", "Demo Transit", "EUR 18.00", "17 Oct 2026"],
+  "expected": {"document_type": "payment_screenshot", "seller": "Demo Transit", "date": "2026-10-17", "total": "18.00", "items": []}
+}
