@@ -123,3 +123,11 @@ Append new entries at the end. Keep completed entries unchanged; corrections get
 - Evidence: initial branch main; git fetch origin succeeded; HEAD and origin/main both b6d984e, divergence 0/0 before committing. Existing configured Git author identity is used without changing settings.
 - Verification: python _Wiki/tools/check_wiki.py passed (41 pages, three entry points); git diff --check passed. Documentation impact for this handoff log/audit ledger is MEDIUM through linked pages, no File-node execution processes. Staged diff whitespace check passed, all 28 staged paths are Markdown, and no tracked unstaged changes remain. Final detect_changes(scope=all) returned 28 files/93 documentation sections, all 93 symbols listed, zero affected execution processes and low change risk; no partial/truncated flags exposed. Commit/push completion and remote hash are verified afterward rather than assumed here.
 - Limits and follow-up: this publication adds no application implementation or new runtime-test claim. Current application/service findings remain in the trackers and audit. The source-anchored 307-file inventory describes the pre-publication baseline; four added wiki pages are separately listed in the ledger.
+
+## [2026-10-17] fix | Preserve the literal Python setup path
+
+- Actor: Codex, during the authorized publication verification.
+- Changes: corrected a spacing typo in the machine-specific Python interpreter path in [contributing](development/contributing.md), and protected the literal path with inline code formatting.
+- Evidence: the selected interpreter is C:/Program Files/Python313/python.exe; prose formatting had inserted a space in the directory name. No application/configuration changes.
+- Verification: python _Wiki/tools/check_wiki.py and git diff --check passed; graph/diff checks precede the follow-up commit. The preceding wiki commit9482e3c was pushed and git ls-remote confirmed its hash on origin/main before this correction.
+- Follow-up: publish this bounded documentation correction on main; personal Obsidian state remains excluded. Local GitNexus refresh encountered sandbox EPERM on its user registry and was retried with the necessary filesystem permission, independently of the successful Git push.

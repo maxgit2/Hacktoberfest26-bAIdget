@@ -81,7 +81,7 @@ git diff --check
 node .gitnexus/run.cjs detect-changes --scope all --repo .
 ```
 
-Use a real Python 3.9+ interpreter; audit uses C:/Program Files/Python 313/python.exe (3.13.0). GitNexus became available after the user indexed this checkout. Explicitly bind Hacktoberfest26-bAIdget in MCP; named context/impact works, concept queries warned missing FTS and are not authoritative negative results. Graph framework/DI omissions need source confirmation. The checker validates local paths/metadata/index coverage, not URL uptime, heading anchors or behavior.
+Use a real Python 3.9+ interpreter; audit uses `C:/Program Files/Python313/python.exe` (3.13.0). GitNexus became available after the user indexed this checkout. Explicitly bind Hacktoberfest26-bAIdget in MCP; named context/impact works, concept queries warned missing FTS and are not authoritative negative results. Graph framework/DI omissions need source confirmation. The checker validates local paths/metadata/index coverage, not URL uptime, heading anchors or behavior.
 
 Keep shared IDs, preserve raw notes and append-only history, update the three trackers and current state in the same change. Retained historical stash hashes are recorded in the earlier [log](../log.md); they were not inspected/restored by this audit. Do not blindly apply old snapshots over current work. No commit or push is implied by a documentation request.
 
