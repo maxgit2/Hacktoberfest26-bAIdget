@@ -57,6 +57,10 @@ class CategoriesRepository:
             return None
         return self._category(snapshot)
 
+    async def get_any(self, uid: str, category_id: str) -> dict[str, object] | None:
+        snapshot = await self._categories(uid).document(category_id).get()
+        return self._category(snapshot) if snapshot.exists else None
+
     async def onboard(
         self, uid: str, categories: list[dict[str, object]]
     ) -> list[dict[str, object]]:
