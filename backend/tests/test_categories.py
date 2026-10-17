@@ -232,3 +232,32 @@ async def test_repository_helpers_find_active_and_used_categories(client, app, u
         category["id"]
     )
     assert await repository.is_category_in_use(uid, category["id"]) is False
+
+
+async def test_category_with_a_non_deleted_expense_cannot_be_deleted(client, user_a):
+    response = await onboard(client, user_a)
+    category = response.json()["categories"][0]
+    expense = await client.post(
+        "/v1/expenses",
+        headers=user_a,
+        json={
+            "date": "2026-10-16T10:30:00Z",
+            "category": category["id"],
+            "amount": 12.34,
+            "currency": "EUR",
+        },
+    )
+    assert expense.status_code == 201
+
+    assert_error(
+        await client.delete(f"/v1/categories/{category['id']}", headers=user_a),
+        409,
+        "category_in_use",
+    )
+
+    assert (
+        await client.delete(f"/v1/expenses/{expense.json()['id']}", headers=user_a)
+    ).status_code == 204
+    assert (
+        await client.delete(f"/v1/categories/{category['id']}", headers=user_a)
+    ).status_code == 204
