@@ -1,0 +1,4 @@
+{
+  "image_text": ["SAMPLE INVOICE", "Demo Utilities", "Invoice date 2026-08-31", "VAT 4.40", "Total 26.40 EUR"],
+  "expected": {"document_type": "invoice", "seller": "Demo Utilities", "date": "2026-08-31", "total": "26.40", "vat_total": "4.40"}
+}

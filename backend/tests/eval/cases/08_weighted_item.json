@@ -1,0 +1,4 @@
+{
+  "image_text": ["Synthetic Grocer", "Apples 1.50 kg x 2.00 3.00", "TOTAL 3.00"],
+  "expected": {"document_type": "receipt", "seller": "Synthetic Grocer", "total": "3.00", "items": [{"description": "Apples", "quantity": "1.50", "unit_price": "2.00", "total": "3.00"}]}
+}

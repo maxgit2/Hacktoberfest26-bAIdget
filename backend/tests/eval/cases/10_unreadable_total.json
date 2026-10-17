@@ -1,0 +1,4 @@
+{
+  "image_text": ["Placeholder Store", "2026-10-10", "Item ??.??", "TOTAL [blurred]"],
+  "expected": {"document_type": "receipt", "seller": "Placeholder Store", "date": "2026-10-10", "total": null}
+}

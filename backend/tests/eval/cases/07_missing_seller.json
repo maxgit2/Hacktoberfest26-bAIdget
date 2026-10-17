@@ -1,0 +1,4 @@
+{
+  "image_text": ["CARD PAYMENT", "2026-10-12", "AMOUNT EUR 9.99"],
+  "expected": {"document_type": "payment_screenshot", "seller": null, "date": "2026-10-12", "total": "9.99"}
+}

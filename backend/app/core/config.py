@@ -10,7 +10,8 @@ class Settings(BaseSettings):
     firestore_emulator_host: str | None = None
     firebase_auth_emulator_host: str | None = None
     gemini_api_key: str | None = None
-    gemini_model: str | None = None  # set via env; verified against docs in slice 06
+    gemini_model: str = "gemini-flash-latest"
+    gemini_timeout_seconds: float = 30
     scan_rate_limit_per_hour: int = 30
     max_image_bytes: int = 10_485_760
     tz_name: str = "Europe/Rome"
