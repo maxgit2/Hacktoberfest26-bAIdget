@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Response, status
 
 from app.core.auth import AuthenticatedUser, current_user
+from app.models.errors import error_responses
 from app.models.recurring import (
     MakeRecurringRequest,
     MakeRecurringResponse,
@@ -29,6 +30,13 @@ router = APIRouter(tags=["recurring"])
     response_model=MakeRecurringResponse,
     status_code=status.HTTP_201_CREATED,
     operation_id="makeExpenseRecurring",
+    responses=error_responses(
+        "unauthenticated",
+        "not_found",
+        "already_recurring",
+        "validation_error",
+        "internal_error",
+    ),
 )
 async def create(
     expense_id: str,
@@ -42,7 +50,9 @@ async def create(
 @router.get(
     "/v1/recurring-rules",
     response_model=RecurringRuleListResponse,
+    status_code=status.HTTP_200_OK,
     operation_id="listRecurringRules",
+    responses=error_responses("unauthenticated", "internal_error"),
 )
 async def list_(
     user: Annotated[AuthenticatedUser, Depends(current_user)],
@@ -54,7 +64,15 @@ async def list_(
 @router.patch(
     "/v1/recurring-rules/{rule_id}",
     response_model=RecurringRuleResponse,
+    status_code=status.HTTP_200_OK,
     operation_id="updateRecurringRule",
+    responses=error_responses(
+        "unauthenticated",
+        "not_found",
+        "validation_error",
+        "category_not_found",
+        "internal_error",
+    ),
 )
 async def update(
     rule_id: str,
@@ -72,8 +90,12 @@ async def update(
 
 @router.delete(
     "/v1/recurring-rules/{rule_id}",
+    response_model=None,
     status_code=status.HTTP_204_NO_CONTENT,
     operation_id="deleteRecurringRule",
+    responses=error_responses(
+        "unauthenticated", "not_found", "validation_error", "internal_error"
+    ),
 )
 async def delete(
     rule_id: str,
@@ -87,7 +109,9 @@ async def delete(
 @router.post(
     "/v1/recurring-rules/sync",
     response_model=RecurringSyncResponse,
+    status_code=status.HTTP_200_OK,
     operation_id="syncRecurringRules",
+    responses=error_responses("unauthenticated", "internal_error"),
 )
 async def sync(
     user: Annotated[AuthenticatedUser, Depends(current_user)],

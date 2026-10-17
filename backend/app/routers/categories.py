@@ -12,6 +12,7 @@ from app.models.category import (
     OnboardingRequest,
     OnboardingResponse,
 )
+from app.models.errors import error_responses
 from app.repositories.categories import (
     CategoriesRepository,
     get_categories_repository,
@@ -30,7 +31,11 @@ router = APIRouter(prefix="/v1/categories", tags=["categories"])
 
 
 @router.get(
-    "/catalog", response_model=CatalogResponse, operation_id="getCategoryCatalog"
+    "/catalog",
+    response_model=CatalogResponse,
+    status_code=status.HTTP_200_OK,
+    operation_id="getCategoryCatalog",
+    responses=error_responses("unauthenticated", "internal_error"),
 )
 async def category_catalog(
     _user: Annotated[AuthenticatedUser, Depends(current_user)],
@@ -43,6 +48,15 @@ async def category_catalog(
     response_model=OnboardingResponse,
     status_code=status.HTTP_201_CREATED,
     operation_id="onboardCategories",
+    responses=error_responses(
+        "unauthenticated",
+        "already_onboarded",
+        "category_name_taken",
+        "validation_error",
+        "min_categories",
+        "max_categories",
+        "internal_error",
+    ),
 )
 async def onboarding(
     request: OnboardingRequest,
@@ -53,7 +67,13 @@ async def onboarding(
     return await onboard_categories(user, request, repository, users_repository)
 
 
-@router.get("", response_model=CategoryListResponse, operation_id="listCategories")
+@router.get(
+    "",
+    response_model=CategoryListResponse,
+    status_code=status.HTTP_200_OK,
+    operation_id="listCategories",
+    responses=error_responses("unauthenticated", "internal_error"),
+)
 async def categories(
     user: Annotated[AuthenticatedUser, Depends(current_user)],
     repository: Annotated[CategoriesRepository, Depends(get_categories_repository)],
@@ -66,6 +86,13 @@ async def categories(
     response_model=CategoryResponse,
     status_code=status.HTTP_201_CREATED,
     operation_id="createCategory",
+    responses=error_responses(
+        "unauthenticated",
+        "category_name_taken",
+        "validation_error",
+        "max_categories",
+        "internal_error",
+    ),
 )
 async def create(
     request: CategoryCreate,
@@ -78,7 +105,15 @@ async def create(
 @router.patch(
     "/{category_id}",
     response_model=CategoryResponse,
+    status_code=status.HTTP_200_OK,
     operation_id="updateCategory",
+    responses=error_responses(
+        "unauthenticated",
+        "not_found",
+        "category_name_taken",
+        "validation_error",
+        "internal_error",
+    ),
 )
 async def update(
     category_id: str,
@@ -91,8 +126,17 @@ async def update(
 
 @router.delete(
     "/{category_id}",
+    response_model=None,
     status_code=status.HTTP_204_NO_CONTENT,
     operation_id="deleteCategory",
+    responses=error_responses(
+        "unauthenticated",
+        "not_found",
+        "category_in_use",
+        "cannot_modify_other",
+        "validation_error",
+        "internal_error",
+    ),
 )
 async def delete(
     category_id: str,

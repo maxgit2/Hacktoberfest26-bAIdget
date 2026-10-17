@@ -4,6 +4,7 @@ from typing import Annotated, Literal
 from fastapi import APIRouter, Depends, Query, Response, status
 
 from app.core.auth import AuthenticatedUser, current_user
+from app.models.errors import error_responses
 from app.models.expense import (
     ExpenseCreate,
     ExpenseListResponse,
@@ -31,6 +32,19 @@ router = APIRouter(prefix="/v1/expenses", tags=["expenses"])
     response_model=ExpenseResponse,
     status_code=status.HTTP_201_CREATED,
     operation_id="createExpense",
+    responses={
+        status.HTTP_200_OK: {
+            "model": ExpenseResponse,
+            "description": "Existing expense returned for an idempotent retry.",
+        },
+        **error_responses(
+            "unauthenticated",
+            "not_found",
+            "validation_error",
+            "category_not_found",
+            "internal_error",
+        ),
+    },
 )
 async def create(
     request: ExpenseCreate,
@@ -48,7 +62,13 @@ async def create(
     return expense
 
 
-@router.get("", response_model=ExpenseListResponse, operation_id="listExpenses")
+@router.get(
+    "",
+    response_model=ExpenseListResponse,
+    status_code=status.HTTP_200_OK,
+    operation_id="listExpenses",
+    responses=error_responses("unauthenticated", "validation_error", "internal_error"),
+)
 async def list_(
     user: Annotated[AuthenticatedUser, Depends(current_user)],
     repository: Annotated[ExpensesRepository, Depends(get_expenses_repository)],
@@ -73,7 +93,15 @@ async def list_(
     )
 
 
-@router.get("/{expense_id}", response_model=ExpenseResponse, operation_id="getExpense")
+@router.get(
+    "/{expense_id}",
+    response_model=ExpenseResponse,
+    status_code=status.HTTP_200_OK,
+    operation_id="getExpense",
+    responses=error_responses(
+        "unauthenticated", "not_found", "validation_error", "internal_error"
+    ),
+)
 async def get(
     expense_id: str,
     user: Annotated[AuthenticatedUser, Depends(current_user)],
@@ -83,7 +111,17 @@ async def get(
 
 
 @router.patch(
-    "/{expense_id}", response_model=ExpenseResponse, operation_id="updateExpense"
+    "/{expense_id}",
+    response_model=ExpenseResponse,
+    status_code=status.HTTP_200_OK,
+    operation_id="updateExpense",
+    responses=error_responses(
+        "unauthenticated",
+        "not_found",
+        "validation_error",
+        "category_not_found",
+        "internal_error",
+    ),
 )
 async def update(
     expense_id: str,
@@ -101,8 +139,12 @@ async def update(
 
 @router.delete(
     "/{expense_id}",
+    response_model=None,
     status_code=status.HTTP_204_NO_CONTENT,
     operation_id="deleteExpense",
+    responses=error_responses(
+        "unauthenticated", "not_found", "validation_error", "internal_error"
+    ),
 )
 async def delete(
     expense_id: str,
