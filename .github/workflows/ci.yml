@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+        shell: bash -el {0}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: conda-incubator/setup-miniconda@v3
+        with:
+          activate-environment: baidget
+          environment-file: backend/environment.yml
+          auto-activate-base: false
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - run: npm install --global firebase-tools
+      - run: conda run -n baidget ruff check .
+      - run: conda run -n baidget ruff format --check .
+      - run: firebase emulators:exec --project demo-baidget --only firestore,auth 'conda run -n baidget pytest -q'
