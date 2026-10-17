@@ -1,6 +1,6 @@
 # Open questions & decisions to approve
 
-Status: **OPEN** until the user answers. Executors do not resolve these.
+Status: **ADOPTED AS PROPOSED** (2026-10-17, user said "go on" without answering; user may override). Executors still do not resolve new ones.
 
 ## Missing input
 - **Q-0** `specs/01-stack.md` was not provided. `02-data-model.md` was derived from the handoff, and decisions [D-n] are below. Please send 01-stack.md if it exists, or approve the D-list.
