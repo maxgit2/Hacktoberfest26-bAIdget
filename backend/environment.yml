@@ -1,0 +1,20 @@
+name: baidget
+channels:
+  - conda-forge
+  - nodefaults
+dependencies:
+  - python=3.12
+  - pip
+  - pip:
+      - fastapi
+      - uvicorn[standard]
+      - pydantic-settings
+      - google-cloud-firestore
+      - firebase-admin
+      - google-genai
+      - pillow
+      - python-multipart
+      - pytest
+      - pytest-asyncio
+      - httpx
+      - ruff
