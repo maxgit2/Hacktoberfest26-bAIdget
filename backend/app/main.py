@@ -7,7 +7,9 @@ from app.routers.categories import router as categories_router
 from app.routers.expenses import router as expenses_router
 from app.routers.health import router as health_router
 from app.routers.me import router as me_router
+from app.routers.recurring import router as recurring_router
 from app.routers.scan import router as scan_router
+from app.routers.summary import router as summary_router
 
 
 def create_app() -> FastAPI:
@@ -26,6 +28,8 @@ def create_app() -> FastAPI:
     application.include_router(categories_router)
     application.include_router(expenses_router)
     application.include_router(scan_router)
+    application.include_router(recurring_router)
+    application.include_router(summary_router)
     return application
 
 
