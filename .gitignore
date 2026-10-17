@@ -1,4 +1,6 @@
 # Miscellaneous
+# Personal wiki editor state is not shared project knowledge.
+/_Wiki/.obsidian/
 *.class
 *.log
 *.pyc

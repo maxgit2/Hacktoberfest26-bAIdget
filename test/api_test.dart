@@ -62,6 +62,41 @@ class _CountingAuth extends FakeAuthService {
   }
 }
 
+class _FailingAuth extends _CountingAuth {
+  _FailingAuth({
+    this.failInitialToken = false,
+    this.failRefresh = false,
+    this.nullRefresh = false,
+    this.failSignOut = false,
+  });
+
+  final bool failInitialToken;
+  final bool failRefresh;
+  final bool nullRefresh;
+  final bool failSignOut;
+  final tokenError = StateError('Token provider failed');
+
+  @override
+  Future<String?> getIdToken({bool forceRefresh = false}) async {
+    if (!forceRefresh && failInitialToken) throw tokenError;
+    if (forceRefresh && (failRefresh || nullRefresh)) {
+      refreshes++;
+      if (failRefresh) throw tokenError;
+      return null;
+    }
+    return super.getIdToken(forceRefresh: forceRefresh);
+  }
+
+  @override
+  Future<void> signOut() async {
+    if (failSignOut) {
+      signOuts++;
+      throw StateError('Sign-out provider failed');
+    }
+    await super.signOut();
+  }
+}
+
 Map<String, Object> _err(String code) => {
   'error': {'code': code, 'message': 'msg', 'details': <String, Object>{}},
 };
@@ -121,6 +156,92 @@ void main() {
   });
 
   group('AuthInterceptor', () {
+    test('a failed initial token completes without sending a request', () async {
+      final auth = _FailingAuth(failInitialToken: true);
+      final adapter = _ScriptedAdapter([]);
+      final dio = createDio(baseUrl: 'https://api.test', auth: auth)
+        ..httpClientAdapter = adapter;
+
+      await expectLater(
+        dio.get<dynamic>('/me').timeout(const Duration(seconds: 2)),
+        throwsA(
+          isA<DioException>().having(
+            (e) => e.error,
+            'original token error',
+            same(auth.tokenError),
+          ),
+        ),
+      );
+      expect(adapter.requests, isEmpty);
+    });
+
+    test('a failed refresh completes with the original 401', () async {
+      final auth = _FailingAuth(failRefresh: true);
+      final adapter = _ScriptedAdapter([
+        (401, _err('unauthenticated'), {}),
+      ]);
+      final dio = createDio(baseUrl: 'https://api.test', auth: auth)
+        ..httpClientAdapter = adapter;
+
+      await expectLater(
+        apiCall(() => dio.get<dynamic>('/me'))
+            .timeout(const Duration(seconds: 2)),
+        throwsA(
+          isA<ApiException>()
+              .having((e) => e.statusCode, 'status', 401)
+              .having((e) => e.code, 'code', ApiErrorCode.unauthenticated),
+        ),
+      );
+      expect(auth.refreshes, 1);
+      expect(auth.signOuts, 1);
+      expect(adapter.requests, hasLength(1));
+    });
+
+    test('failed sign-out after a second 401 preserves that error', () async {
+      final auth = _FailingAuth(failSignOut: true);
+      final adapter = _ScriptedAdapter([
+        (401, _err('unauthenticated'), {}),
+        (401, _err('unauthenticated'), {}),
+      ]);
+      final dio = createDio(baseUrl: 'https://api.test', auth: auth)
+        ..httpClientAdapter = adapter;
+
+      await expectLater(
+        apiCall(() => dio.get<dynamic>('/me'))
+            .timeout(const Duration(seconds: 2)),
+        throwsA(
+          isA<ApiException>()
+              .having((e) => e.statusCode, 'status', 401)
+              .having((e) => e.code, 'code', ApiErrorCode.unauthenticated),
+        ),
+      );
+      expect(auth.refreshes, 1);
+      expect(auth.signOuts, 1);
+      expect(adapter.requests, hasLength(2));
+    });
+
+    test('null refresh and failed sign-out preserve the original 401', () async {
+      final auth = _FailingAuth(nullRefresh: true, failSignOut: true);
+      final adapter = _ScriptedAdapter([
+        (401, _err('unauthenticated'), {}),
+      ]);
+      final dio = createDio(baseUrl: 'https://api.test', auth: auth)
+        ..httpClientAdapter = adapter;
+
+      await expectLater(
+        apiCall(() => dio.get<dynamic>('/me'))
+            .timeout(const Duration(seconds: 2)),
+        throwsA(
+          isA<ApiException>()
+              .having((e) => e.statusCode, 'status', 401)
+              .having((e) => e.code, 'code', ApiErrorCode.unauthenticated),
+        ),
+      );
+      expect(auth.refreshes, 1);
+      expect(auth.signOuts, 1);
+      expect(adapter.requests, hasLength(1));
+    });
+
     test('sends the Bearer token', () async {
       final adapter = _ScriptedAdapter([(200, _me, {})]);
       final dio = createDio(baseUrl: 'https://api.test', auth: _CountingAuth())

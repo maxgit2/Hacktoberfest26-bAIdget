@@ -1,65 +1,56 @@
 ---
 title: User flows
-status: draft
+status: active
 updated: 2026-10-17
 ---
 
 # User flows
 
-Source: [updated specification](../raw/2026-10-17-updated-specification.md), [ADR-0004](../decisions/adr-0004-updated-product-baseline.md). **Required** denotes source requirements; proposed recovery/save mechanics need contracts. At `055275e` the only app screen is the [counter demo](../../lib/main.dart). These product flows are not built/tested.
+Authority: [SRC-004](../raw/2026-10-17-frontend-handoff.md), [ADR-0005](../decisions/adr-0005-api-handoff-baseline.md). These target flows have partial implementation: frontend 6d9baea supplies auth/profile/onboarding/upload/detail/settings and mocks; backend 18c0d19 supplies health/auth/profile only. The synthetic demo is not a complete real backend flow. See [setup](../development/contributing.md) and [integration review](../development/integration-review.md). The frontend handoff establishes English UI and gallery-only input.
 
-## Automatic identity, categories, and home
+## Google authentication and onboarding
 
-1. **Required, 1.0:** automatically identify/authenticate through a smartphone-generated unique ID/fingerprint, stable across logins from that smartphone. The old Google sign-in direction is superseded.
-2. **Open:** technical meaning of fingerprint, backend ownership proof/session, and reinstall/reset/device-change recovery. Do not infer biometric authentication or a specific Android identifier/API.
-3. **Required:** offer predefined templates (four/six starting categories) or creation from scratch. The narrative allows rename/add/remove on a selected template.
-4. **Open:** template selection is in 1.0; editing is in 2.0. Clarify whether onboarding customization is in 1.0 or all edits wait (Q-10).
-5. **Required:** after setup, home offers scan image, import expense, and expense summary. **Proposed:** preserve returning-user configuration and expose manual entry through import expense; exact navigation is unspecified.
+1. Sign in with Google via Firebase Auth and Google Sign-In in the backend's Firebase project.
+2. GET /me creates/returns the profile. If onboarding_completed is false, load GET /categories/catalog.
+3. Presets preselect catalog items; user selects at least two catalog/custom categories and submits POST /categories/onboarding. Backend adds Other and marks onboarded.
+4. Use category CRUD after onboarding; identify Other by is_other rather than editable name. On category_in_use, tell the user to move/delete referenced expenses first; active rules can also block deletion.
 
-Address generation is described at user creation although email import lands in 3.0. Decide provisioning timing (Q-06), empty-category completion, and account/session recovery.
+For API requests fetch the Firebase ID token, send Bearer auth, force refresh/retry once on 401, then sign out if still unauthenticated. The SDK is Auth-only; never access Firestore directly or send owner. Device fingerprint identity from SRC-003 is superseded.
 
-## Gallery receipt import and review
+## Start/resume and online state
 
-The detailed **required** flow starts by selecting an existing gallery image. Milestone 1.0 separately lists receipt scanning; additional direct camera capture remains unresolved (Q-15), rather than inherited automatically from the old brief.
+The handoff triggers POST /recurring-rules/sync at every app start/resume, described as fire-and-forget, then loads categories/expenses/summary. Follow has_more with further idempotent sync calls. Ordering of initial display, completion refresh, failure/retry and overlapping resume calls needs clarification; do not assume fire-and-forget makes newly generated records immediately visible.
 
-```mermaid
-flowchart TD
-    A[Home: scan image] --> B[Select gallery image]
-    B --> C[Backend OCR and classification]
-    C --> D[Shared expense review form]
-    M[Manual entry] --> D
-    D --> E[User corrects fields]
-    E --> F[Confirm and save: proposed boundary]
-    C --> G[Failed or incomplete extraction]
-    G --> D
-```
+The app is online-only. Show request/loading/error states rather than implying an offline editing/sync protocol.
 
-Extraction/classification uses the user's categories; users can always correct results. The explicit confirmation/save boundary is proposed. Model output is a draft, not trusted saved data. Fields and optional amount handling follow the [model](../engineering/domain-model.md) and open [contracts](../engineering/contracts.md).
+## Manual expense and shared edit form
 
-**Proposed recovery states:** picker cancellation/access denied, preview/reselect, uploading/extracting, incomplete draft, saving/saved, retry/failure. Preserve edits after recoverable errors; validate media/size; never invent missing values. Formats, limits, timing, and separate OCR/classification stages are unspecified.
+Generate UUIDv4 before POST /expenses and retain it across retries. Supply date/category/EUR plus optional amount/seller/title/description. The API creates a single expense, returning 201 or 200 for a repeated expense ID belonging to that user. Do not send owner or read-only type/source/timestamps. Missing currency behavior is an OpenAPI question despite the stated EUR default.
 
-## Shared manual-entry form
+The earlier shared manual/post-scan form design remains useful; use current field/validation rules. Manual submission creates the record; editing a saved record uses PATCH. Null clears optional fields. Keep local form edits during recoverable errors; no endpoint for changing a saved expense's ID/type/source exists.
 
-**Required, 1.0:** manual input is always available and uses the same screen as post-scan validation, without requiring an image/OCR. **Proposed:** start with an empty draft, apply agreed defaults, validate, confirm/save, and preserve recoverable edits.
+## Scan: save first, review afterward
 
-Use source fields such as `date`, `seller`, `title`, `category`, `type`, `description`, `amount`, and `currency`. Ownership/creation metadata are not trusted form inputs. Amount is explicitly optional; saving and summary treatment for missing amounts are still open.
+Select a receipt/payment screenshot from the gallery; current frontend decisions exclude camera capture. Client code prepares JPEG at most 2048px long side/quality85 and retains a UUID for scan retry. Only the mock currently responds; real backend scan/PATCH correction is still planned.
 
-Single/recurring purchases are mentioned alongside literal `concurrent` and unspecified `info`. Schedule, next occurrence, series edits, fixed expenses, and cron generation are not defined or implemented.
+Show a loader and use client timeout 45 seconds; the handoff's 3–10 seconds is an estimate. Retry timeouts with the same ID. The response is **already saved**, so there is no confirmation/create step afterward. Display the expense and allow PATCH correction; highlight needs_review and send false after review. Other is classification fallback. If neither merchant nor total is extracted, the API reports extraction_failed and creates nothing. Backend image storage is explicitly excluded by the contract.
 
-## Forwarded-email import
+This supersedes the earlier proposed pre-save draft workflow; a saved uncertain record still requires validation/correction. Cancellation after upload is not a guarantee of no saved expense. Recover by retrying the same operation ID or retrieving the result under the agreed client flow.
 
-**Required, 3.0:** forward payment receipts to a system-generated user address; backend periodically synchronizes received messages. AgentMail is an evaluation candidate. No OAuth access to users' personal mailboxes is established.
+## Expense list and deletion
 
-**Proposed:** map recipient to owner, deduplicate delivery, safely extract/validate, and expose a draft. **Open:** confirmation policy, pending-import UI, attachments, polling/retries, unknown recipients, and address lifecycle. Webhooks would change the stated periodic-sync approach and need a decision.
+Use server filters (inclusive from, exclusive to, category ID, type, needs_review), date-descending order, and opaque pagination cursor. Display optional fields/null amount honestly; use server summaries for totals. PATCH an occurrence changes only it. DELETE soft-deletes; hide deleted records and do not infer that deleting an occurrence stops its series.
 
-## Summaries and comparison
+## Recurring series
 
-**Required, 2.0:** browse weekly/monthly/yearly and by category; compare current/previous week/month/year. The source requests a category pie chart and mentions bar charts. Optional category granularity does not yet define a hierarchy.
+Convert an existing expense with make-recurring (weekly/monthly/yearly; optional inclusive local end_date). It becomes the first occurrence and the backend catches up missing ones through today.
 
-**Open, Q-17:** default charts/comparisons in 2.0 versus selectable types in 5.0. **Proposed:** empty states and refresh after save/correction. Timezone/week starts, partial-period comparisons, null amounts, currencies, deletion, and recurrence need aggregation rules.
+Use rules endpoints for future series changes; frequency/start cannot change. Rule deletion stops future generation but leaves created expenses. Reactivation does not backfill a paused interval. Monthly 31st clamps to shorter-month end and returns to the original day later. App lifecycle sync is required; no cron dependency is declared.
 
-## Budgets and notifications
+## Summaries and later scope
 
-**Required, 4.0:** create budgets and notify at 25%, 50%, 75%, 100%; per-category alerts are optional. Budget periods, amount representation, configurable thresholds, repeated crossings/alerts, reset, edits/deletions, notification channel/permissions remain open (Q-18). No notification infrastructure is selected.
+Use monthly/yearly summary endpoints: server Europe/Rome boundaries, EUR totals/category shares, uncounted amount-less records, and 12 yearly month buckets including zero months. Archived categories with expenses remain visible in summaries. Percentages may not sum to exactly 100.
 
-Related: [scope/milestones](scope.md), [model](../engineering/domain-model.md), [contracts](../engineering/contracts.md), [AI/data](../engineering/ai-and-data.md), [questions](../open-questions.md).
+Weekly summaries and current/previous comparison presentation from SRC-003 are not specified by this handoff; keep them as integration gaps rather than computing totals from expense lists. Family, email import, bulk scan, voice, other currencies, offline mode, and budgets are explicitly out of scope for now.
+
+See [scope](scope.md), [contracts](../engineering/contracts.md), and [frontend tracker](../development/frontend-tracker.md) for acceptance gates and implementation status.

@@ -20,8 +20,19 @@ class AuthInterceptor extends Interceptor {
   ) async {
     // A retry already carries the force-refreshed token.
     if (options.path != '/health' && options.extra[_retriedKey] != true) {
-      final token = await _auth.getIdToken();
-      if (token != null) options.headers['Authorization'] = 'Bearer $token';
+      try {
+        final token = await _auth.getIdToken();
+        if (token != null) options.headers['Authorization'] = 'Bearer $token';
+      } catch (error, stackTrace) {
+        return handler.reject(
+          DioException(
+            requestOptions: options,
+            error: error,
+            stackTrace: stackTrace,
+            message: 'Could not obtain an authentication token',
+          ),
+        );
+      }
     }
     handler.next(options);
   }
@@ -35,13 +46,19 @@ class AuthInterceptor extends Interceptor {
     if (err.response?.statusCode != 401) return handler.next(err);
 
     if (options.extra[_retriedKey] == true) {
-      await _auth.signOut();
+      await _signOutSafely();
       return handler.next(err);
     }
 
-    final token = await _auth.getIdToken(forceRefresh: true);
+    final String? token;
+    try {
+      token = await _auth.getIdToken(forceRefresh: true);
+    } catch (_) {
+      await _signOutSafely();
+      return handler.next(err);
+    }
     if (token == null) {
-      await _auth.signOut();
+      await _signOutSafely();
       return handler.next(err);
     }
 
@@ -57,6 +74,14 @@ class AuthInterceptor extends Interceptor {
       handler.resolve(await _dio.fetch<dynamic>(options));
     } on DioException catch (e) {
       handler.next(e);
+    }
+  }
+
+  Future<void> _signOutSafely() async {
+    try {
+      await _auth.signOut();
+    } catch (_) {
+      // Preserve the original 401 even if provider sign-out fails.
     }
   }
 }

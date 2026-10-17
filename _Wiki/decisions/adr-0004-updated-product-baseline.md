@@ -1,12 +1,12 @@
 ---
 title: ADR-0004 Updated product and stack baseline
-status: active
+status: superseded
 updated: 2026-10-17
 ---
 
 # ADR-0004: Updated product and stack baseline
 
-- Decision status: **accepted at the requirements/direction level**; unresolved implementation contracts are not accepted by implication.
+- Decision status: **superseded as the current integration baseline by [ADR-0005](adr-0005-api-handoff-baseline.md)**. Previously accepted at requirements/direction level; historical adoption below is preserved. Earlier future milestones remain deferred scope, not implemented behavior.
 - Date: 2026-10-17.
 - Authority: project initiator supplied the updated specification and explicitly requested wiki reconciliation; [SRC-003](../raw/2026-10-17-updated-specification.md) records it in English. No separate teammate approval is asserted.
 - Replaces: [ADR-0002](adr-0002-initial-stack.md) as the current direction. [ADR-0003](adr-0003-flutter-scaffold.md) remains evidence of the existing scaffold.

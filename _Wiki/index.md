@@ -10,19 +10,23 @@ This is the entry point for developers, designers, Codex, and Claude. It capture
 
 ## Orientation and coordination
 
-- [Current state](current-state.md): updated specification versus existing Flutter scaffold, verification limits, and next steps.
+- [Current state](current-state.md): integrated partial Flutter/backend implementation, verification limits, and next steps.
 - [Maintenance workflow](maintenance.md): schema, evidence, ingest/query/lint, and update rules.
 - [Activity log](log.md): append-only chronology of work and verification.
 - [Open questions](open-questions.md): unresolved choices, impact, and resolution links.
 - [Contributing and setup](development/contributing.md): team workflow and actual command registry.
+- [Integration review and verification](development/integration-review.md): pinned frontend/dev source, actual checks, bounded repairs and residual issues.
+- [Frontend activity/milestone tracker](development/frontend-tracker.md): Flutter tasks, owners, status, dependencies and completion gates.
+- [Backend activity/milestone tracker](development/backend-tracker.md): declared API delivery versus verified implementation; artifacts and remaining work.
+- [Infrastructure activity/milestone tracker](development/infrastructure-tracker.md): tooling, Firebase/access, hosting/extraction and operational checks.
 
 ## Product and engineering
 
-- [Product scope](product/scope.md): current requirements, milestones 0.1–5.0, optional features, and acceptance scenarios.
-- [User flows](product/user-flows.md): device identity, categories, gallery/OCR and manual shared form, email, comparisons, budgets/alerts.
-- [Architecture and technology registry](engineering/architecture.md): observed counter execution flow, dependency/build-tool versions, and proposed product boundaries.
-- [Domain model](engineering/domain-model.md): supplied expense fields, optional float amount, timestamps, recurrence/deletion, and unresolved encoding.
-- [Integration contracts](engineering/contracts.md): client/backend handoff checklist and AI extraction boundary.
+- [Product scope](product/scope.md): latest handoff scope, workstream milestones, deferred earlier roadmap and acceptance gates.
+- [User flows](product/user-flows.md): Firebase Google login, categories, saved-scan review, manual input, recurring rules and summaries.
+- [Architecture and technology registry](engineering/architecture.md): observed client/backend flows, dependency/build-tool versions, and remaining product boundaries.
+- [Domain model](engineering/domain-model.md): expense/category/rule fields, server ownership, EUR/nulls, timestamps and persisted review.
+- [Integration contracts](engineering/contracts.md): endpoint index, Firebase auth, retries, errors, summaries and missing OpenAPI limits.
 - [AI, data, and trust boundaries](engineering/ai-and-data.md): receipt/email processing, validation, privacy, and verification scenarios.
 
 ## Decisions and lessons
@@ -31,15 +35,21 @@ This is the entry point for developers, designers, Codex, and Claude. It capture
 - [ADR-0001: Shared project wiki](decisions/adr-0001-shared-project-wiki.md): accepted knowledge workflow and English convention.
 - [ADR-0002: Initial application stack](decisions/adr-0002-initial-stack.md): superseded initial proposal, preserved for history.
 - [ADR-0003: Flutter client scaffold](decisions/adr-0003-flutter-scaffold.md): observed implementation choice, root package, generated platforms, and limits.
-- [ADR-0004: Updated product and stack baseline](decisions/adr-0004-updated-product-baseline.md): updated human requirements, supersession, and open contracts.
-- [Lessons register](lessons/index.md): reproducible problems and verified fixes; no application fixes yet.
+- [ADR-0004: Updated product and stack baseline](decisions/adr-0004-updated-product-baseline.md): superseded SRC-003 adoption, retained for history/future scope.
+- [ADR-0005: API handoff integration baseline](decisions/adr-0005-api-handoff-baseline.md): current supplied contract, changed boundaries and maintained workstream tracking.
+- [ADR-0006: Integrated client/backend](decisions/adr-0006-integrated-client-and-backend.md): implementation/tooling choices versus future proposals and deployment limits.
+- [Lessons register](lessons/index.md): reproducible problems, verified fixes and their limits.
 - [Git author identity](lessons/git-author-identity.md): observed commit failure and verified command-local author setup.
+- [Backend emulator test isolation](lessons/backend-emulator-test-isolation.md): verified fail-fast guard and correct local emulator setup.
+- [Firestore profile contention](lessons/firestore-profile-contention.md): verified bounded retry after SDK commit exhaustion and remaining deadline limits.
 
 ## Sources
 
 - [Source register and methodology](sources/index.md): provenance and the adaptation of the reference discussion.
 - [Initial project brief](raw/2026-10-17-project-brief.md): English source note from the project initiator's initial message.
 - [Updated specification](raw/2026-10-17-updated-specification.md): SRC-003 English translation/transcription, fields, flows, milestones, stack, and unresolved wording.
+- [Frontend API handoff source record](raw/2026-10-17-frontend-handoff.md): SRC-004 complete supplied document, provenance, digest and runtime-evidence limits.
+- [Frontend/main and backend/dev integration source](raw/2026-10-17-integration-source-record.md): SRC-005 pinned commits, human request and initial observations.
 - [Karpathy reference record](raw/2026-10-17-karpathy-reference.md): external URL, retrieval scope, and limitations.
 
 ## Reusable templates and tooling

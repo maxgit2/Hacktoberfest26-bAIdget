@@ -74,7 +74,26 @@ Types: `ingest`, `query`, `change`, `decision`, `fix`, `lint`, `handoff`. Use a 
 
 Re-read shared files before editing and inspect the diff afterward. Preserve other contributors' content, merge log additions, and reconcile current-state statements. For overlapping topic work, coordinate via the team's existing channel or issue; no workflow here authorizes agents to send external messages.
 
-## Lint and freshness
+## Maintain workstream activities and milestones
+
+The [frontend](development/frontend-tracker.md), [backend](development/backend-tracker.md), and [infrastructure](development/infrastructure-tracker.md) registers are the canonical task lists. Milestone/task IDs are stable; their work breakdown is proposed unless a human acceptance/deadline is evidenced. Do not duplicate mutable task tables in scope or architecture pages.
+
+| Task status | Meaning |
+| --- | --- |
+| todo | Required/proposed work not implemented in the inspected evidence |
+| in-progress | Work actually started; record owner and current evidence |
+| blocked | A specific missing input prevents the activity; identify dependency and next action |
+| unverified | Source declares behavior or external implementation may exist, but inspected code/check evidence is insufficient |
+| done | The row's stated completion gate is met with linked evidence; distinguish artifact existence from executed integration |
+| deferred | Outside current scope or awaiting a separately agreed extension |
+
+For each implementation, verification, delivery or status change, update the affected register in the same diff: status, explicit owner (default unassigned), dependency and concrete evidence such as commit/path, test command/result, schema/config revision, or supplied artifact. Include mocks and unrun checks. Append the dated transition/evidence to log.md, update frontmatter, and reassess the milestone gate and dependent workstreams. Do not mark a milestone done while required child tasks are todo/blocked/unverified. Preserve completed rows/IDs; correct a mistaken completion through a logged transition, not deletion.
+
+Contract intake can complete a documentation task but cannot complete its API implementation task. Never infer a teammate assignment, backend deployment, percentage complete, or passing test from a specification. Unverified backend work first needs source/runtime evidence; it is not automatically unstarted. Update current-state.md when a milestone or blocker materially changes and check all tracker links through the normal wiki checker.
+
+These registers are maintained by contributors/agents under this workflow. No background monitoring or recurring automation was installed; include tracker updates in every relevant handoff.
+
+## Lint and freshness checks
 
 After substantive wiki changes and before a demo handoff:
 

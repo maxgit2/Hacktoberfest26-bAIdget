@@ -6,59 +6,43 @@ updated: 2026-10-17
 
 # Product scope
 
-Current authority: [updated specification, SRC-003](../raw/2026-10-17-updated-specification.md), adopted in [ADR-0004](../decisions/adr-0004-updated-product-baseline.md). The [initial brief](../raw/2026-10-17-project-brief.md) is historical. Requirements below are not implemented: source inspection at `055275e` still shows only the [Flutter counter scaffold](../decisions/adr-0003-flutter-scaffold.md).
+Current client/API scope: [SRC-004](../raw/2026-10-17-frontend-handoff.md), [ADR-0005](../decisions/adr-0005-api-handoff-baseline.md). Integration of frontend 6d9baea and backend 18c0d19 adds partial screens/mocks and health/auth/profile source. [ADR-0006](../decisions/adr-0006-integrated-client-and-backend.md) and [integration review](../development/integration-review.md) record the evidence limits. The full API remains a target; earlier raw sources/scaffold decisions are history.
 
-## Intended experience
+## Current integration scope
 
-bAIdget is an Android app for recording/classifying expenses through receipt images, manual input, and forwarded payment emails, then reviewing spending by period/category. Personal use remains the working scope, but SRC-003 explicitly questions “for one person”; family groups are optional and sharing is undefined (Q-16).
+Personal Android expense tracking, online-only and EUR-only, with English UI and gallery-only input under frontend handoff decisions. Firebase SDK use is Auth-only, and verified tokens establish backend ownership. Current default client mode is fake auth/in-memory data; family sharing remains excluded.
 
-## Current requirements
-
-Requirement IDs are retained across revisions; updated wording does not imply completion.
-
-| ID | Capability | Updated requirement | Milestone / status |
-| --- | --- | --- | --- |
-| REQ-01 | Identity | Automatic auth through a smartphone ID/fingerprint stable across logins from that smartphone; replaces Google sign-in | 1.0; mechanism open, absent from scaffold |
-| REQ-02 | Category setup | Select four/six-category starting templates or create from scratch; narrative permits rename/add/remove | Selection 1.0; editing listed in 2.0; timing ambiguity Q-10 |
-| REQ-03 | Receipt image | Select an existing gallery image; backend OCR reads/classifies using user categories; user reviews/corrects | 1.0; additional camera capture unclear, Q-15 |
-| REQ-04 | Manual expense | Always available; same form as OCR review; single/recurring input mentioned | Manual entry 1.0; recurrence semantics open |
-| REQ-05 | Email import | Forward to an address generated during user creation; backend periodically synchronizes messages | 3.0; AgentMail to evaluate |
-| REQ-06 | Summaries | Weekly/monthly/yearly/category views; category pie chart; current-versus-previous-period comparison; optional category granularity | Summaries 2.0; chart variants 5.0; timing/defaults open |
-| REQ-07 | Home | Scan image, import expense, expense summary actions | No separate milestone assigned; navigation details open |
-| REQ-08 | Expense fields | Supplied owner/date/category/type/amount/currency/metadata fields | [Domain model](../engineering/domain-model.md); API/validation not final |
-| REQ-09 | Budgets/alerts | Create budgets; notify at 25%, 50%, 75%, 100%; per-category alerts optional | 4.0; budget/notification semantics open |
-
-Euro is the default currency; its code/encoding remains open. Category labels, app locale/language, hierarchy, and OCR acceptance criteria are unspecified. Four/six describe starting template sizes, not limits.
-
-## Source milestone sequence
-
-This replaces the wiki's earlier suggested demo ordering. The initiator supplied these labels and contents; they are planned scope, not shipped releases, deadlines, or a guarantee that all stages fit the hackathon.
-
-| Milestone | Planned scope | Repository evidence |
+| ID | Current requirement | Evidence / implementation boundary |
 | --- | --- | --- |
-| 0.1 | Backend infrastructure, details to define | No backend scaffold/configuration |
-| 1.0 | Automatic device identity; template selection; receipt scanning and gallery import; manual entry | Only unrelated counter demo exists |
-| 2.0 | Server deployment; category editing after template; summaries | Not implemented |
-| 3.0 | Forwarded-email import | Not implemented |
-| 4.0 | Budget creation; alerts at 25%, 50%, 75%, 100% | Not implemented |
-| 5.0 | Different chart types in summaries | Not implemented |
+| REQ-01 | Firebase Google auth and one-refresh Bearer retry | Client SDK/adapter and backend auth present; fake default, real project configuration unverified |
+| REQ-02 | Catalog/presets/custom onboarding, bounds, CRUD and Other protections | Onboarding UI/mock present; backend slice 02/category maintenance absent; max includes Other in backend proposal |
+| REQ-03 | One gallery receipt/payment image; immediate save and review correction | Upload/read-only detail/mock present; backend scan and client PATCH correction absent; no camera route |
+| REQ-04 | Manual single-expense create/edit/delete; optional amount; EUR; UUID retry key | Owner/type/source/timestamps are not editable request fields |
+| REQ-05 | Email import | Explicitly outside current scope; retain as deferred roadmap |
+| REQ-06 | Monthly/yearly and category summaries, uncounted values, yearly 12 month buckets | Weekly/previous-period presentation from SRC-003 not defined here |
+| REQ-07 | Navigate onboarding/categories, expenses, input/review, recurrence, summaries | Exact home layout remains design work |
+| REQ-08 | Expense/category/rule fields and error/idempotency/pagination conventions | [Domain model](../engineering/domain-model.md), missing OpenAPI blocks final schema verification |
+| REQ-09 | Budgets/alerts | Explicitly outside current scope; no budget schema/endpoints |
+| REQ-10 | Recurring rule conversion/edit/stop and idempotent sync on start/resume | Distinct occurrence/series edits; replaces undefined concurrent/cron assumptions |
 
-The detailed scan flow starts in the gallery while 1.0 separately lists scanning and gallery import. The narrative permits onboarding category edits while 2.0 lists editing. Chart examples appear in the narrative while variants are in 5.0. Preserve these tensions until [Q-10, Q-15, Q-17](../open-questions.md) are resolved. Address generation is described at user creation although email import lands in 3.0; provisioning timing is Q-06.
+## Milestones and maintained work registers
 
-## Optional or unscheduled capabilities
+The latest handoff does not assign release numbers or deadlines. The workstream milestones below are **proposed execution groupings** derived from it; no person/date is assigned without evidence. Task status, dependency, owner, and completion proof live in one canonical register per workstream:
 
-Family groups, speech-to-text, additional currencies, a cron job for `concurrent` records, automatic fixed expenses, optional category granularity, and per-category budget alerts remain suggestions. Budgets/threshold notifications are now explicit 4.0 scope. Recurring input is in the core narrative; automatic occurrence generation is separately optional without a milestone. Storing a recurring definition does not imply a running scheduler.
+- [Frontend tracker](../development/frontend-tracker.md): scaffold, auth/categories, expense/scan UI, recurrence/summaries, verification.
+- [Backend tracker](../development/backend-tracker.md): source/OpenAPI delivery, identity/categories, expenses/extraction, recurrence/aggregation, verification.
+- [Infrastructure tracker](../development/infrastructure-tracker.md): repo baseline, SDK/Firebase/environment, backend/data/OCR deployment, operational checks.
 
-## Candidate acceptance scenarios
+The [maintenance workflow](../maintenance.md) defines status updates. A contract claim is not a done implementation; tasks with unavailable implementation evidence remain unverified or blocked.
 
-These are proposed cases, not executed tests/finalized contracts; see [flows](user-flows.md), [contracts](../engineering/contracts.md), and [AI/data](../engineering/ai-and-data.md).
+## Earlier numbered roadmap: historical/future scope
 
-- Repeated access from the same smartphone reaches the same owner under the agreed auth mechanism; spoofing an ID/owner does not grant access.
-- Template/from-scratch setup works; editing follows the resolved milestone boundary and returning users retain categories.
-- A gallery image yields an editable draft; cancellation/failure preserves a manual path; confirmed corrections are saved.
-- Manual input uses the same form without OCR; required fields and missing amounts follow agreed validation/accounting rules.
-- Summaries/comparisons agree with saved records, period boundaries, optional amounts, deleted records, currencies, and recurrence rules.
-- Reprocessing forwarded email avoids duplicates and respects recipient ownership/review rules.
-- Budget crossings produce the agreed alerts with defined reset, repeated-processing, category, edit, and deletion behavior.
+SRC-003 supplied 0.1 backend infrastructure; 1.0 device identity/templates/input; 2.0 deployment/categories/summaries; 3.0 email; 4.0 budgets and 25/50/75/100% alerts; 5.0 chart variants. Those labels are preserved in the immutable source, **not current delivery commitments**. Device identity is replaced; recurrence and category CRUD now belong to the declared integration contract. Do not defer them merely because an old version list was vague.
 
-All expense features, service integrations, platform builds, and these scenarios remain unverified in application code.
+Email, budgets, family, bulk scan, speech-to-text, other currencies, and offline mode are explicitly out of scope now. Weekly summaries, period-comparison presentation, optional category hierarchy, camera capture, and chart-selection timing require clarification/extension. DeepSeek-OCR and AgentMail names from SRC-003 do not prove current provider adoption; the handoff does not name its extraction model.
+
+## Acceptance gate
+
+Verify on real configured client/backend: Google login and first/returning onboarding; category constraints/Other; owner isolation and error codes; UUID retries without duplicates; manual CRUD; scan saved-on-return/review correction/failure recovery; recurrence sync and separate occurrence/series edits; server summary totals/null handling/Rome boundaries; client Firestore denial. Source examples and the counter smoke test do not satisfy these gates.
+
+See [flows](user-flows.md), [contracts](../engineering/contracts.md), [questions](../open-questions.md), and the three registers for the exact remaining work.
