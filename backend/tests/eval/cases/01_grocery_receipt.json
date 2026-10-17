@@ -1,0 +1,4 @@
+{
+  "image_text": ["Fictional Market", "2026-10-01", "Bread 2.40", "Milk 1.60", "TOTAL EUR 4.00"],
+  "expected": {"document_type": "receipt", "seller": "Fictional Market", "date": "2026-10-01", "total": "4.00", "currency": "EUR", "category_id": "cat_groceries"}
+}
