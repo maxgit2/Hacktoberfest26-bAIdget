@@ -177,7 +177,10 @@ class RulesRepository:
             references = [expenses.document(expense_id) for expense_id, _ in candidates]
             existing = {}
             if references:
-                async for snapshot in transaction.get_all(references):
+                # SDK bug: AsyncTransaction.get_all awaits an async generator; call the client directly.
+                async for snapshot in self.client.get_all(
+                    references, transaction=transaction
+                ):
                     existing[snapshot.id] = snapshot.exists
 
             created = 0
