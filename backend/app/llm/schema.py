@@ -1,11 +1,10 @@
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 
 
+# Gemini response_schema rejects additionalProperties, so no extra="forbid" here.
 class ExtractionItem(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
     description: str | None
     quantity: str | None
     unit_price: str | None
@@ -13,8 +12,6 @@ class ExtractionItem(BaseModel):
 
 
 class ExtractionModel(BaseModel):
-    model_config = ConfigDict(extra="forbid")
-
     document_type: Literal["receipt", "invoice", "payment_screenshot", "other"]
     seller: str | None
     date: str | None
