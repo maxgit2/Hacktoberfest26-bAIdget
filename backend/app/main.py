@@ -4,6 +4,7 @@ from app.core.errors import install_error_handlers
 from app.core.logging import RequestLoggingMiddleware, configure_logging
 from app.repositories.client import lifespan
 from app.routers.categories import router as categories_router
+from app.routers.expenses import router as expenses_router
 from app.routers.health import router as health_router
 from app.routers.me import router as me_router
 
@@ -22,6 +23,7 @@ def create_app() -> FastAPI:
     application.include_router(health_router)
     application.include_router(me_router)
     application.include_router(categories_router)
+    application.include_router(expenses_router)
     return application
 
 
