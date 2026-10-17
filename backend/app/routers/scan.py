@@ -6,6 +6,7 @@ from pydantic import UUID4
 
 from app.core.auth import AuthenticatedUser, current_user
 from app.core.config import Settings, get_settings
+from app.models.errors import error_responses
 from app.models.expense import ExpenseResponse
 from app.repositories.categories import (
     CategoriesRepository,
@@ -27,6 +28,25 @@ router = APIRouter(prefix="/v1/expenses", tags=["expenses"])
     response_model=ExpenseResponse,
     status_code=status.HTTP_201_CREATED,
     operation_id="scanExpense",
+    responses={
+        status.HTTP_200_OK: {
+            "model": ExpenseResponse,
+            "description": "Existing expense returned for an idempotent retry.",
+        },
+        **error_responses(
+            "unauthenticated",
+            "not_found",
+            "image_too_large",
+            "unsupported_image_type",
+            "validation_error",
+            "category_not_found",
+            "extraction_failed",
+            "rate_limited",
+            "extraction_unavailable",
+            "extraction_timeout",
+            "internal_error",
+        ),
+    },
 )
 async def scan(
     response: Response,

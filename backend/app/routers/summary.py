@@ -1,9 +1,10 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, status
 
 from app.core.auth import AuthenticatedUser, current_user
 from app.core.config import Settings, get_settings
+from app.models.errors import error_responses
 from app.models.summary import MonthlySummaryResponse, YearlySummaryResponse
 from app.repositories.categories import (
     CategoriesRepository,
@@ -18,7 +19,9 @@ router = APIRouter(prefix="/v1/summary", tags=["summary"])
 @router.get(
     "/monthly",
     response_model=MonthlySummaryResponse,
+    status_code=status.HTTP_200_OK,
     operation_id="getMonthlySummary",
+    responses=error_responses("unauthenticated", "validation_error", "internal_error"),
 )
 async def monthly(
     month: Annotated[str, Query(pattern=r"^\d{4}-\d{2}$")],
@@ -43,7 +46,9 @@ async def monthly(
 @router.get(
     "/yearly",
     response_model=YearlySummaryResponse,
+    status_code=status.HTTP_200_OK,
     operation_id="getYearlySummary",
+    responses=error_responses("unauthenticated", "validation_error", "internal_error"),
 )
 async def yearly(
     year: Annotated[str, Query(pattern=r"^\d{4}$")],

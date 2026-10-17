@@ -217,13 +217,13 @@ Creates a **single** expense.
 ```
 Required: `date`, `category`, `currency` (default `"EUR"`). Optional: `id`, `amount`, `seller`, `title`, `description`. If `id` is omitted the server generates one.
 → `201` Expense (`200` if the `id` already existed).
-Errors: `422 category_not_found`, `422 validation_error`.
+Errors: `422 category_not_found`, `422 validation_error`. `404 not_found` if the `id` belongs to an expense you deleted (a deleted expense is never re-created).
 
 ### `POST /expenses/scan`
 `multipart/form-data`: `image` (file: jpeg/png/webp, ≤ 10 MB) and optional `id` (UUIDv4). Works for receipts and for screenshots of a payment (bank app, wallet, e-mail confirmation). **One image per request.**
 → `201` Expense with `source: "scan"` (`200` on repeated `id`). Already saved, no confirmation step. The server picks a category from the user's categories (falls back to `Other`).
 `needs_review: true` when the amount or date could not be read reliably or the items don't add up to the total.
-Errors: `413`, `415`, `422 extraction_failed`, `429 rate_limited` (default 30 scans/hour/user), `503`, `504`.
+Errors: `413`, `415`, `422 extraction_failed`, `429 rate_limited` (default 30 scans/hour/user), `503`, `504`. `404 not_found` if the `id` belongs to a deleted expense. `422 category_not_found` if the user has not completed onboarding (no `Other` category).
 The image is **not** stored by the backend.
 
 ### `GET /expenses`
