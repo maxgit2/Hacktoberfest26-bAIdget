@@ -2,7 +2,7 @@
 # One-time GCP setup for the bAIdget backend (run by a project owner).
 # Creates: Artifact Registry repo (auto-cleanup), runtime + deployer service accounts (least privilege),
 # Secret Manager secret for the Gemini key, Workload Identity Federation for GitHub Actions (this repo only),
-# GitHub repo variables, and a 1 EUR budget alert.
+# GitHub repo variables, and a 1 USD budget alert.
 # Usage: CLOUDSDK_ACTIVE_CONFIG_NAME=baidget bash deploy/bootstrap-gcp.sh
 set -euo pipefail
 
@@ -64,10 +64,10 @@ gh variable set GCP_REGION -R "$REPO" -b "$REG"
 gh variable set WIF_PROVIDER -R "$REPO" -b "projects/$PN/locations/global/workloadIdentityPools/github/providers/github-repo"
 gh variable set DEPLOY_SA -R "$REPO" -b "$DEP"
 
-echo "== Budget alert (1 EUR, alerts at 50/90/100%)"
+echo "== Budget alert (1 USD, alerts at 50/90/100%)"
 gcloud billing budgets list --billing-account="$BILLING" --format='value(displayName)' | grep -qx baidget-budget ||
   gcloud billing budgets create --billing-account="$BILLING" --display-name=baidget-budget \
-    --budget-amount=1EUR --filter-projects="projects/$P" \
+    --budget-amount=1USD --filter-projects="projects/$P" \
     --threshold-rule=percent=0.5 --threshold-rule=percent=0.9 --threshold-rule=percent=1.0
 
 echo "Done. Next: add the Gemini key with
