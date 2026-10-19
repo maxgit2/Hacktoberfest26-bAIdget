@@ -48,3 +48,13 @@ app.*.map.json
 
 # Widget Preview related
 .widget_preview/
+.obsidian/app.json
+.obsidian/appearance.json
+.obsidian/community-plugins.json
+.obsidian/core-plugins.json
+.obsidian/graph.json
+.obsidian/hotkeys.json
+.obsidian/workspace.json
+.obsidian/plugins/hide-folders/data.json
+.obsidian/plugins/hide-folders/main.js
+.obsidian/plugins/hide-folders/manifest.json
