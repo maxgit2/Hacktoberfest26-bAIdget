@@ -1,7 +1,7 @@
 ---
 title: Wiki activity log
 status: active
-updated: 2026-10-17
+updated: 2026-10-19
 ---
 
 # Activity log
@@ -137,3 +137,21 @@ Append new entries at the end. Keep completed entries unchanged; corrections get
 - Changes: replaced the root README with a project overview: features, architecture diagram, tech stack, the agent orchestration workflow, local run steps, future work and license. States that the GCP project and Cloud Run deployment were shut down on 2026-10-17.
 - Evidence: backend slices 00-07 merged to main (90 tests passing on emulators, CI green); live scan verified end to end with a real receipt before shutdown.
 - Follow-up: `current-state.md` and the backend tracker still describe only slices 00-01 and need a refresh.
+
+## [2026-10-19] change | Reconcile wiki with the pulled post-hackathon documentation
+
+- Actor: Codex, at the initiator's request to check the freshly pulled repository and update stale wiki content.
+- Changes: added [SRC-007](raw/2026-10-19-post-hackathon-update.md), reconciled [current state](current-state.md), [infrastructure](engineering/infrastructure.md), setup, scope, review, audit ledger, sources/index and ADR-0007's operational addendum. Updated all three trackers and open questions; INF-10 changed todo to deferred and Q-27 is conditional on resumed hosting. The old URL and 500/503 probes are historical; the merged README reports deployment shutdown, not a newly verified cloud state. Specific Obsidian ignores are documented.
+- Correction to the preceding README entry: current state and backend tracker already covered slices 00-07 in commit 9482e3c; they did not still describe only 00-01. Preserve that entry as history. README-reported 90 tests, green CI and successful live scan are retained as attributed historical reports, not independently rerun results or evidence that missing Flutter screens exist.
+- Evidence: clean initial main 3b4cee3; git diff --name-only 4fa9754..HEAD identifies README.md, _Wiki/log.md and .gitignore only. git diff --name-only b6d984e..HEAD -- lib test backend android .github pubspec.yaml pubspec.lock returned no paths. No application changes or new dependency/contract/product decisions.
+- Verification: C:/Program Files/Python313/python.exe _Wiki/tools/check_wiki.py passed (42 wiki pages, three entry points); git diff --check passed after removing a trailing blank line. Reviewed the source delta and linked canonical pages for consistency. Application/emulator/Flutter suites and cloud/provider/hosted CI checks were not rerun.
+- Graph: bound Hacktoberfest26-bAIdget; index initially five commits behind at 4fa9754. Pre-edit impacts identify documentation references, no execution processes; HIGH risk on heavily linked trackers/questions/review was surfaced before editing, IDs/links/history preserved. node .gitnexus/run.cjs analyze --index-only failed with EPERM writing the user registry outside the workspace (the prior log already records this failure mode). No successful full refresh claimed. detect_changes(scope=all) before this log returned 13 changed tracked Markdown files, 24 sections, zero affected processes and low risk, without partial/truncated flags; the new raw source is separately covered by the wiki checker.
+- Follow-up: keep unresolved source findings and unverified acceptance gates; obtain reproducible run artifacts or rerun checks if development resumes. No commit, push, cloud mutation or external message performed.
+
+## [2026-10-19] change | Link the hackathon submission
+
+- Actor: Codex, at the initiator's request.
+- Changes: added the initiator-supplied MLH submission link near the top of the [README](../README.md) and in [product scope](product/scope.md).
+- Evidence: the initiator corrected the earlier unrelated URL and supplied the MLH submission URL in this chat. Browser retrieval could not access the page; its contents were not independently verified.
+- Verification: C:/Program Files/Python313/python.exe _Wiki/tools/check_wiki.py passed (42 pages, 479 local links); git diff --check passed. No application behavior changed.
+- Follow-up: none; no commit or push requested.

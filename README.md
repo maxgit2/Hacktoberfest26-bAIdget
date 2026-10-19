@@ -4,6 +4,8 @@
 
 Built during a one-day hackathon for Hacktoberfest 2026: a Flutter mobile app and a FastAPI backend developed in parallel, with Google Gemini doing the receipt reading.
 
+[View the hackathon submission on MLH](https://www.mlh.com/events/hacktoberfest-hack-day-milano-x-coding-bunker/submissions/01a14a07-ec0b-8893-8b60-eca85e30fdd3).
+
 > **Status:** hackathon finished. The cloud deployment was shut down on 2026-10-17. The code, tests and docs stay here, and the backend runs locally with the Firebase emulators.
 
 ---

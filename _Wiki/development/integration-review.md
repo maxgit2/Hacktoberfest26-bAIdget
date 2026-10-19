@@ -1,10 +1,12 @@
 ---
 title: Integration review and verification evidence
 status: active
-updated: 2026-10-17
+updated: 2026-10-19
 ---
 
 # Integration review and verification evidence
+
+Freshness check at `3b4cee3` on 2026-10-19 found no application/test/config changes since `b6d984e`. [SRC-007](../raw/2026-10-19-post-hackathon-update.md) records the README's reported shutdown and historical 90-test/green-CI/live-scan results. No application tests, hosted logs or cloud resources were checked in this follow-up; the findings below remain unresolved in source. The 500/503 probes are historical, not an active outage report.
 
 The earlier integration below is historical. For current main source, findings and actual checks see [post-merge audit](#post-merge-audit-at-b6d984e) and the [file ledger](repository-audit.md).
 

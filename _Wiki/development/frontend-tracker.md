@@ -1,11 +1,13 @@
 ---
 title: Frontend activity and milestone tracker
 status: active
-updated: 2026-10-17
+updated: 2026-10-19
 owner: unassigned
 ---
 
 # Frontend activity and milestone tracker
+
+Freshness checked at `3b4cee3` on 2026-10-19: no Flutter source/test changes. [SRC-007](../raw/2026-10-19-post-hackathon-update.md) reports hosting shutdown; real integration requires a configured local API or explicitly restored hosting. Existing client task statuses and owners are unchanged.
 
 Current Flutter source at main `b6d984e` remains the partial auth/onboarding/upload/detail/settings client. Backend availability in source has advanced to every handoff operation, so absent API code is no longer its blocker. Mocks and test declarations do not close real configuration/runtime gates. Owners unassigned; [review](integration-review.md#post-merge-audit-at-b6d984e), [maintenance](../maintenance.md).
 
@@ -15,12 +17,12 @@ Current Flutter source at main `b6d984e` remains the partial auth/onboarding/upl
 | FE-M1 | Real auth/API bootstrap, onboarding/category maintenance | Partial client, backend source exists; platform Firebase/real validation pending |
 | FE-M2 | Expense CRUD and saved scan review | Gallery/upload/read-only detail exist; manual/PATCH/list/delete missing |
 | FE-M3 | Recurrence and server summaries | Bounded lifecycle sync hook only; management/summary UI missing |
-| FE-M4 | Android/runtime/integration/recovery | Toolchain/config unverified here; public backend unhealthy in audit probe |
+| FE-M4 | Android/runtime/integration/recovery | Toolchain/config unverified here; old backend reported shut down; configured API needed |
 
 | ID | Milestone | Status | Owner | Activity / completion gate | Evidence / dependency |
 | --- | --- | --- | --- | --- | --- |
 | FE-01 | FE-M0 | done | Unassigned | Root app/manifests/test-source artifact gate | lib/, pubspec/lock, test/api_test.dart and app_flow_test.dart present |
-| FE-02 | FE-M1 | blocked | Unassigned | Complete schema, configured Firebase and real routing inputs | OpenAPI/address now supplied (BE-02); Android Firebase files/Google Services plugin absent and public probes500/503; INF-03/10 |
+| FE-02 | FE-M1 | blocked | Unassigned | Complete schema, configured Firebase and real routing inputs | OpenAPI/address now supplied (BE-02); Android Firebase files/Google Services plugin absent; old hosting reported shut down, configured local/restored API needed; INF-03/10 |
 | FE-03 | FE-M1 | in-progress | Unassigned | Real Google/Firebase login and one-refresh retry integration | Adapter/interceptor present, USE_FIREBASE=false default; Firebase.initializeApp without supplied platform options/files, no live test |
 | FE-04 | FE-M1 | in-progress | Unassigned | Catalog/presets/custom onboarding and category CRUD/errors | Onboarding/read implemented; editing/category CRUD repositories/UI missing; backend source now present BE-04; FE-15 |
 | FE-05 | FE-M2 | todo | Unassigned | Manual/shared expense edit/create/PATCH/null form with retry key | No create/PATCH client; backend source exists, runtime and BE-13 compatibility needed |

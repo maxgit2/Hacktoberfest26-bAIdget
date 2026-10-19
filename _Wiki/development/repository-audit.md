@@ -1,12 +1,16 @@
 ---
 title: Repository reconciliation audit
 status: active
-updated: 2026-10-17
+updated: 2026-10-19
 ---
 
 # Repository reconciliation audit
 
 Requested by the project initiator to reconcile the wiki after the dev merge. Baseline: `b6d984e`; initial working tree clean. Documentation only; source findings do not imply live deployment or human acceptance of every implementation choice.
+
+## Freshness follow-up at 3b4cee3 (2026-10-19)
+
+Compared `4fa9754..HEAD`: only README.md, _Wiki/log.md and .gitignore changed. Compared `b6d984e..HEAD` for application/test/platform/manifests/workflows: no changes. This ledger remains the historical full source inventory; no full re-audit or runtime rerun is implied. [SRC-007](../raw/2026-10-19-post-hackathon-update.md) reconciles the new shutdown/outcome report. The README log's claim that the wiki only covered slices 00-01 was already obsolete after `9482e3c`.
 
 ## Resume protocol
 

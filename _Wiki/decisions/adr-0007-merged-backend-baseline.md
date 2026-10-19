@@ -1,7 +1,7 @@
 ---
 title: ADR-0007 Merged backend MVP baseline
 status: active
-updated: 2026-10-17
+updated: 2026-10-19
 ---
 
 # ADR-0007: Record the merged backend MVP baseline
@@ -24,3 +24,7 @@ Cloud Run delivery uses GitHub OIDC/WIF, Secret Manager runtime injection and a 
 ## Consequences and follow-up
 
 Backend features must no longer be marked absent, while full product milestones stay open pending [verification and mismatches](../development/integration-review.md#post-merge-audit-at-b6d984e). Do not silently bless differences such as currency coercion, category-limit drift, scan-details serialization or sync completion. Record them in [questions](../open-questions.md) and trackers. Current public service probes returned500/503; deployment artifacts do not establish healthy availability. No API/feature implementation was altered by this decision record.
+
+## 2026-10-19 operational addendum
+
+[SRC-007](../raw/2026-10-19-post-hackathon-update.md) records the merged README's report that the hackathon ended and cloud deployment shut down on 2026-10-17, plus reported historical CI/test/live-scan successes. Record the old URL as historical and defer INF-10 hosting restoration unless work resumes. This is reconciliation of a teammate report, not a new hosting/product decision or independently verified resource deletion. No new human approval is inferred; source-level issues and incomplete Flutter gates remain open.

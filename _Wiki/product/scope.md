@@ -1,12 +1,18 @@
 ---
 title: Product scope
 status: active
-updated: 2026-10-17
+updated: 2026-10-19
 ---
 
 # Product scope
 
 Current client/API scope: [SRC-004](../raw/2026-10-17-frontend-handoff.md), [ADR-0005](../decisions/adr-0005-api-handoff-baseline.md). Current main `b6d984e` contains the full backend handoff route set and a partial Flutter client. [ADR-0007](../decisions/adr-0007-merged-backend-baseline.md) and the [current review](../development/integration-review.md#post-merge-audit-at-b6d984e) distinguish source delivery, missing client features, unrun checks and observed service errors. Earlier raw sources/scaffold decisions remain history.
+
+## Post-hackathon status
+
+[Hackathon submission on MLH](https://www.mlh.com/events/hacktoberfest-hack-day-milano-x-coding-bunker/submissions/01a14a07-ec0b-8893-8b60-eca85e30fdd3), supplied by the project initiator on 2026-10-19 and linked from the root README.
+
+The merged README reports the hackathon finished and cloud hosting shut down on 2026-10-17; see [SRC-007](../raw/2026-10-19-post-hackathon-update.md). This changes the operational baseline, not feature acceptance. Its feature overview describes backend capabilities and does not establish missing Flutter screens. Local development remains possible through the documented emulator setup; hosted acceptance needs deliberately configured hosting if resumed.
 
 ## Current integration scope
 
@@ -16,7 +22,7 @@ Personal Android expense tracking, online-only and EUR-only, with English UI and
 | --- | --- | --- |
 | REQ-01 | Firebase Google auth and one-refresh Bearer retry | Client SDK/adapter and backend auth present; fake default, real project configuration unverified |
 | REQ-02 | Catalog/presets/custom onboarding, bounds, CRUD and Other protections | Backend categories/onboarding/CRUD code and tests present; Flutter only onboarding/read; server30 includes Other, client/mock30 excludes it |
-| REQ-03 | One gallery receipt/payment image; immediate save and review correction | Backend Gemini scan/PATCH source and tests present; Flutter upload/read-only detail, no correction form; live extraction unverified |
+| REQ-03 | One gallery receipt/payment image; immediate save and review correction | Backend Gemini scan/PATCH source and tests present; Flutter upload/read-only detail, no correction form; historical live scan reported, independent extraction acceptance unverified |
 | REQ-04 | Manual single-expense create/edit/delete; optional amount; EUR; UUID retry key | Backend CRUD source and tests present; Flutter manual/edit/delete/list absent; owner/type/source/timestamps immutable |
 | REQ-05 | Email import | Explicitly outside current scope; retain as deferred roadmap |
 | REQ-06 | Monthly/yearly and category summaries, uncounted values, yearly 12 month buckets | Server summary source/tests present; client absent; weekly/previous-period extension not specified |
@@ -43,6 +49,6 @@ Email, budgets, family, bulk scan, speech-to-text, other currencies, and offline
 
 ## Acceptance gate
 
-Verify on real configured client/backend: Google login and first/returning onboarding; category constraints/Other; owner isolation and error codes; UUID retries without duplicates; manual CRUD; scan saved-on-return/review correction/failure recovery; recurrence sync and separate occurrence/series edits; server summary totals/null handling/Rome boundaries; client Firestore denial. Source presence, mocked tests and historical auth/profile checks do not satisfy the complete product gate. Public service probes failed500/503 during this audit; see infrastructure evidence.
+Verify on real configured client/backend: Google login and first/returning onboarding; category constraints/Other; owner isolation and error codes; UUID retries without duplicates; manual CRUD; scan saved-on-return/review correction/failure recovery; recurrence sync and separate occurrence/series edits; server summary totals/null handling/Rome boundaries; client Firestore denial. Source presence, mocked tests and historical auth/profile checks do not satisfy the complete product gate. Historical 2026-10-17 probes failed500/503; hosting is now reported shut down; see infrastructure evidence.
 
 See [flows](user-flows.md), [contracts](../engineering/contracts.md), [questions](../open-questions.md), and the three registers for the exact remaining work.

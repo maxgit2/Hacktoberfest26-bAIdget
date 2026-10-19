@@ -1,7 +1,7 @@
 ---
 title: Source register and methodology
 status: active
-updated: 2026-10-17
+updated: 2026-10-19
 ---
 
 # Source register and methodology
@@ -15,7 +15,8 @@ updated: 2026-10-17
 | SRC-003 | [Updated base specification](../raw/2026-10-17-updated-specification.md) | Earlier update translated/transcribed into English; preserved fields/flows/numbered roadmap, superseded where SRC-004 differs |
 | SRC-004 | [Frontend API handoff](../raw/2026-10-17-frontend-handoff.md) | Complete English supplied document with source digest/provenance; current declared API/client behavior, not verified backend implementation |
 | SRC-005 | [Main/dev integration source record](../raw/2026-10-17-integration-source-record.md) | Fetched frontend/backend commits and requested review/merge/publication; updated observed implementation and source-proposal limits |
-| SRC-006 | [Post-merge reconciliation audit](../raw/2026-10-17-post-merge-audit.md) | Full source/wiki reconciliation with persistent inventory; current backend MVP/deployment and verification limits |
+| SRC-006 | [Post-merge reconciliation audit](../raw/2026-10-17-post-merge-audit.md) | Full source/wiki reconciliation with persistent inventory; backend MVP/deployment artifacts and dated verification limits |
+| SRC-007 | [Post-hackathon update](../raw/2026-10-19-post-hackathon-update.md) | Merged README shutdown/outcome report, unchanged application-source delta, corrected stale log claim and specific Obsidian ignores; synthesized in current state, infrastructure and trackers |
 
 SRC-001/SRC-002/SRC-003 remain unchanged source records. SRC-003 was adopted by the now-superseded [ADR-0004](../decisions/adr-0004-updated-product-baseline.md); its email/budget/other future ideas remain history/deferred scope. Its external reference links were opened during that earlier intake only, with no benchmark/provider validation.
 

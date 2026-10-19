@@ -1,7 +1,7 @@
 ---
 title: Wiki index
 status: active
-updated: 2026-10-17
+updated: 2026-10-19
 ---
 
 # bAIdget shared knowledge
@@ -10,8 +10,8 @@ This is the entry point for developers, designers, Codex, and Claude. It capture
 
 ## Orientation and coordination
 
-- [Repository reconciliation audit](development/repository-audit.md): complete file inventory, inspection progress, checks and remaining audit work at main `b6d984e`.
-- [Current state](current-state.md): full backend MVP source, partial Flutter client, service availability and verification limits.
+- [Repository reconciliation audit](development/repository-audit.md): full source inventory at `b6d984e` plus a documentation-delta freshness check at `3b4cee3`.
+- [Current state](current-state.md): backend MVP source, partial Flutter client, reported hosting shutdown and verification limits.
 - [Maintenance workflow](maintenance.md): schema, evidence, ingest/query/lint, and update rules.
 - [Activity log](log.md): append-only chronology of work and verification.
 - [Open questions](open-questions.md): unresolved choices, impact, and resolution links.
@@ -54,6 +54,7 @@ This is the entry point for developers, designers, Codex, and Claude. It capture
 - [Frontend API handoff source record](raw/2026-10-17-frontend-handoff.md): SRC-004 complete supplied document, provenance, digest and runtime-evidence limits.
 - [Frontend/main and backend/dev integration source](raw/2026-10-17-integration-source-record.md): SRC-005 pinned commits, human request and initial observations.
 - [Post-merge reconciliation source](raw/2026-10-17-post-merge-audit.md): SRC-006 current human request, pinned source and audit evidence boundaries.
+- [Post-hackathon update](raw/2026-10-19-post-hackathon-update.md): merged README shutdown/outcome report, source continuity and Obsidian ignore changes.
 - [Karpathy reference record](raw/2026-10-17-karpathy-reference.md): external URL, retrieval scope, and limitations.
 
 ## Reusable templates and tooling

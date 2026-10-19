@@ -1,7 +1,7 @@
 ---
 title: Contributing and development setup
 status: active
-updated: 2026-10-17
+updated: 2026-10-19
 ---
 
 # Contributing and development setup
@@ -27,6 +27,10 @@ Read [current state](../current-state.md), [contracts](../engineering/contracts.
 | docs/frontend-handoff.md, backend/specs | Frontend copy has English/gallery decisions; backend copy now has URL/extra errors; copies/report differ |
 | _Wiki | Canonical current synthesis, historical source/decisions/log, trackers and full audit inventory |
 
+## Post-hackathon development
+
+The merged README reports cloud shutdown on 2026-10-17; the supplied service URL is historical. Use backend local emulator instructions below and synthetic data. A real mobile integration needs an explicitly configured running API and Firebase project; a default mock run does not require a live backend. [SRC-007](../raw/2026-10-19-post-hackathon-update.md) records reported historical test results, not a rerun in this check. Root .gitignore now excludes specific Obsidian files; other vault files may still be tracked.
+
 ## Flutter checks and modes
 
 Root manifest requires Dart ^3.13.4; lockfile Flutter >=3.47.0. Exact Flutter release not pinned. With a compatible installed SDK:
@@ -45,7 +49,7 @@ These commands are instructions, **not executed successes in this audit**. Flutt
 
 Synthetic demo: empty effective URL and USE_FIREBASE=false → fake Continue with Google, at least2 onboarding selections (Essential shortcut), upload a synthetic gallery image, view saved detail, Settings/sign-out. Every second mock scan has null amount/review. No OCR, durable expense storage, manual/edit/list/delete or summary/rule-management UI is demonstrated. Mock category-limit behavior differs from server; do not use it for upper-bound acceptance.
 
-Real mode requires same-project Firebase platform/Google provider configuration plus `--dart-define=USE_FIREBASE=true` and `--dart-define=API_BASE_URL=<host>/v1`. Backend handoff host is documented in [infrastructure](../engineering/infrastructure.md); audit probes500/503 must be resolved first. A nonempty URL alone enables real HTTP while keeping fake auth by default. Settings URL overrides build default; clearing returns to build default, not necessarily mock. Settings is unavailable before home, so recover a bad persisted URL through app data/preferences or a deliberate recovery fix (FE-14).
+Real mode requires same-project Firebase platform/Google provider configuration plus `--dart-define=USE_FIREBASE=true` and `--dart-define=API_BASE_URL=<host>/v1`. Backend handoff host is documented in [infrastructure](../engineering/infrastructure.md); the old cloud deployment is reported shut down, so use a configured local API or deliberately restored hosting. A nonempty URL alone enables real HTTP while keeping fake auth by default. Settings URL overrides build default; clearing returns to build default, not necessarily mock. Settings is unavailable before home, so recover a bad persisted URL through app data/preferences or a deliberate recovery fix (FE-14).
 
 Client/gallery paths are Android-focused; other generated runners are not validated. Debug Android allows cleartext local HTTP; release does not explicitly enable it. Local emulator host mapping (e.g.10.0.2.2) needs actual device/network validation, not a promise of working routing. No CORS middleware is configured for a browser frontend.
 
