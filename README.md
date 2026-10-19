@@ -1,42 +1,112 @@
 # bAIdget
 
-bAIdget is an Android-focused personal expense tracker being developed during a one-day hackathon. The latest API handoff specifies Google sign-in via Firebase Auth, category onboarding, manual/scan expenses, recurring rules, and server monthly/yearly/category summaries. The current scope is online-only and EUR-only; email, budgets and other extensions are deferred. See [scope and milestones](_Wiki/product/scope.md).
+**AI-assisted personal expense tracker.** Snap a receipt or a payment screenshot, and bAIdget reads it, picks the right category and saves the expense for you.
 
-The repository contains a partial Flutter client (auth/onboarding/gallery upload/read-only detail/settings) and a FastAPI backend with health/auth/profile slices. The default app uses fake auth and an in-memory mock; backend categories, expenses, OCR, summaries and recurrence remain planned. Real Firebase configuration, complete committed OpenAPI and deployment are not available. See [current state](_Wiki/current-state.md) and [integration review](_Wiki/development/integration-review.md) for actual evidence and checks.
+Built during a one-day hackathon for Hacktoberfest 2026: a Flutter mobile app and a FastAPI backend developed in parallel, with Google Gemini doing the receipt reading.
 
-## Start here
+> **Status:** hackathon finished. The cloud deployment was shut down on 2026-10-17. The code, tests and docs stay here, and the backend runs locally with the Firebase emulators.
 
-- [Project wiki](_Wiki/index.md): shared product and engineering knowledge.
-- [Product scope](_Wiki/product/scope.md) and [open questions](_Wiki/open-questions.md): requirements and unresolved choices.
-- [Contributing and setup](_Wiki/development/contributing.md): structure, SDK constraints, commands, and observed check results.
-- Work registers: [frontend](_Wiki/development/frontend-tracker.md), [backend](_Wiki/development/backend-tracker.md), [infrastructure](_Wiki/development/infrastructure-tracker.md), with owners, status, dependencies and completion evidence.
-- [Agent instructions](AGENTS.md) and [Claude entry point](CLAUDE.md): shared contribution policy.
+---
 
-All project documentation and code comments must be written in English. Product localization is a separate decision.
+## What it does
 
-## Running the scaffold
+| Feature | How it works |
+|---|---|
+| Google sign-in | Firebase Auth on the phone; the backend verifies the ID token on every request |
+| Category onboarding | Pick at least 2 categories from a catalog (or a preset), add your own; `Other` is always there |
+| Manual expenses | Create, edit, soft delete, filter and paginate. Safe to retry: the client generates the expense id |
+| Receipt scan | One photo of a receipt, invoice or payment screenshot. Gemini extracts seller, date, total, items, VAT and payment method, chooses one of *your* categories and saves it. Uncertain results are flagged `needs_review` |
+| Recurring expenses | Mark any expense as weekly, monthly or yearly. Missing occurrences are created when the app opens, never duplicated |
+| Summaries | Monthly and yearly totals, per category and per month, with exact cent math and Europe/Rome month boundaries |
 
-The Flutter package is at the repository root. Use a Flutter SDK compatible with the Dart constraint `^3.13.4` in [pubspec.yaml](pubspec.yaml); an exact Flutter release is not pinned. With Flutter and the target platform tools available, run from this directory:
+MVP scope: online only, EUR only, and each user sees only their own data.
 
-```sh
-flutter pub get
-flutter analyze
-flutter test
-flutter run
+## Architecture
+
+```mermaid
+flowchart LR
+  app["Flutter app"] -->|Google sign-in| fauth["Firebase Auth"]
+  app -->|"HTTPS + Bearer ID token"| api["FastAPI backend<br/>(Cloud Run, EU)"]
+  api -->|verify token| fauth
+  api --> fs[("Firestore<br/>users/{uid}/...")]
+  api -->|structured extraction| gem["Gemini"]
+  app -. "client access denied by rules" .-x fs
 ```
 
-Flutter commands have not been executed in this session because Flutter/Dart are unavailable. Current [API/model tests](test/api_test.dart) and [widget flows](test/app_flow_test.dart) use mocks; they do not establish real backend integration. Android is the target; other generated runners do not establish product support. See [backend setup](backend/README.md) for emulator-only Python checks and [contributing](_Wiki/development/contributing.md) for the synthetic demo and toolchain limits.
+- The app never touches Firestore directly; every read and write goes through the API.
+- All data lives under `users/{uid}`, and the uid only ever comes from the verified token.
+- Money is stored as integer cents and handled with `Decimal`, never floats.
+- Receipt images are processed in memory (EXIF stripped, resized) and are never stored or logged.
 
-## Flutter resources
+More detail: [backend architecture](backend/specs/03-architecture.md), [data model](backend/specs/02-data-model.md), [API contract](backend/specs/frontend-handoff.md).
 
-- [Learn Flutter](https://docs.flutter.dev/get-started/learn-flutter)
-- [Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Flutter learning resources](https://docs.flutter.dev/reference/learning-resources)
+## Tech stack
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+| Layer | Tools |
+|---|---|
+| Mobile | Flutter, Firebase Auth, Google Sign-In |
+| API | Python 3.12, FastAPI, Pydantic, conda |
+| Data | Cloud Firestore (async client, transactions, composite indexes) |
+| AI | Google Gemini via `google-genai`, JSON schema structured output |
+| Quality | pytest against Firebase emulators, ruff, OpenAPI snapshot and contract tests |
+| Delivery | Docker, GitHub Actions CI, Cloud Run deploy with keyless Workload Identity Federation |
+
+## How it was built
+
+The backend was built with an **agent orchestration workflow**:
+
+1. **Spec first.** A data model, an architecture doc and an API contract for the app developer, plus a list of open questions settled before coding.
+2. **Vertical slices.** Eight slices (scaffold, auth, categories, expenses, summaries, recurring, scan, hardening), each with acceptance criteria and required tests.
+3. **Delegated implementation.** Claude acted as orchestrator and reviewer; OpenAI Codex implemented each slice in its own git worktree. Summaries, recurring and scan were built in parallel.
+4. **Review gate.** Every slice was checked against a hard checklist (user isolation, money rules, soft delete, idempotency, no personal data in logs) and its tests were run on the emulators before merging.
+
+Review caught real bugs before users did, including a Firestore SDK transaction bug and a Gemini schema incompatibility found while testing a real receipt.
+
+**Result:** 21 endpoints, 90 automated tests, CI green on every merge, and an end-to-end test that read a real Milan restaurant receipt correctly (seller, 18.30 EUR total, VAT, card payment, "Dining Out" category).
+
+## Repository layout
+
+```
+lib/        Flutter app (auth, onboarding, upload, expenses, categories, settings)
+backend/    FastAPI service, tests, specs, Dockerfile, GCP bootstrap script
+_Wiki/      Shared product and engineering wiki
+.github/    CI and deploy workflows
+```
+
+## Run it locally
+
+**Backend** (needs conda, Java and `firebase-tools`):
+
+```bash
+cd backend
+conda env create -f environment.yml
+firebase emulators:exec --project demo-baidget --only firestore,auth \
+  'conda run -n baidget pytest -q'
+```
+
+See [backend/README.md](backend/README.md) for environment variables and running the API.
+
+**App:** with no API URL and `USE_FIREBASE=false`, the app runs on fake auth and in-memory data, so `flutter run` works without a backend. See [contributing](_Wiki/development/contributing.md).
+
+## Future work
+
+- Family and shared groups
+- Importing expenses from e-mail
+- Bulk and background scanning
+- Speech-to-text expense entry
+- Multiple currencies
+- Budgets and alerts
+- Offline mode with sync
+- Scheduled recurring generation instead of on app open
+
+## Documentation
+
+- [Project wiki](_Wiki/index.md), [current state](_Wiki/current-state.md), [open questions](_Wiki/open-questions.md)
+- [API contract](backend/specs/frontend-handoff.md) and [`openapi.json`](backend/openapi.json)
+- [Agent instructions](AGENTS.md)
+
+All documentation and code comments are in English.
 
 ## License
 
-See [LICENSE](LICENSE) for the Apache License 2.0.
+[Apache License 2.0](LICENSE)

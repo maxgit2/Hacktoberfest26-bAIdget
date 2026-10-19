@@ -104,3 +104,10 @@ Append new entries at the end. Keep completed entries unchanged; corrections get
 - Evidence: Java command returned OpenJDK 21.0.8; Flutter clone completed at tag commit abaf9c523780a608bd46686fd5e53740a07077f8. Local setup process was observed alive and waiting for verified Android tools. Python interpreter directly returned 3.14.7.
 - Verification: installation remains in progress; no completed Flutter analyzer/test/build or emulator launch is claimed. Downloads are slow. A resumed Studio installer checksum failed and the file was not executed. Optional-feature inspection requires administrator elevation; firmware/hypervisor indications need actual acceleration testing. Download retries and the official corrected Flutter release-manifest path were used; no dependency/app source was intentionally edited.
 - Follow-up: inspect the local setup status/stdout/stderr for final results; resolve any SDK/license/download/build or manual virtualization failures. Keep the computer awake and online. Wiki structural check follows this entry; background results may append a later entry.
+
+## [2026-10-19] change | Root README rewritten after the hackathon
+
+- Actor: Claude (orchestrator), at the user's request.
+- Changes: replaced the root README with a project overview: features, architecture diagram, tech stack, the agent orchestration workflow, local run steps, future work and license. States that the GCP project and Cloud Run deployment were shut down on 2026-10-17.
+- Evidence: backend slices 00-07 merged to main (90 tests passing on emulators, CI green); live scan verified end to end with a real receipt before shutdown.
+- Follow-up: `current-state.md` and the backend tracker still describe only slices 00-01 and need a refresh.
