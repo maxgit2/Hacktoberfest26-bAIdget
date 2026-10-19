@@ -77,6 +77,8 @@ _Wiki/      Shared product and engineering wiki
 
 **Backend** (needs conda, Java and `firebase-tools`):
 
+>NOTE: You need to add your own Firebase project and set your own environment variables.
+
 ```bash
 cd backend
 conda env create -f environment.yml
