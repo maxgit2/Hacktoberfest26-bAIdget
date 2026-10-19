@@ -131,3 +131,9 @@ Append new entries at the end. Keep completed entries unchanged; corrections get
 - Evidence: the selected interpreter is C:/Program Files/Python313/python.exe; prose formatting had inserted a space in the directory name. No application/configuration changes.
 - Verification: python _Wiki/tools/check_wiki.py and git diff --check passed; graph/diff checks precede the follow-up commit. The preceding wiki commit9482e3c was pushed and git ls-remote confirmed its hash on origin/main before this correction.
 - Follow-up: publish this bounded documentation correction on main; personal Obsidian state remains excluded. Local GitNexus refresh encountered sandbox EPERM on its user registry and was retried with the necessary filesystem permission, independently of the successful Git push.
+## [2026-10-19] change | Root README rewritten after the hackathon
+
+- Actor: Claude (orchestrator), at the user's request.
+- Changes: replaced the root README with a project overview: features, architecture diagram, tech stack, the agent orchestration workflow, local run steps, future work and license. States that the GCP project and Cloud Run deployment were shut down on 2026-10-17.
+- Evidence: backend slices 00-07 merged to main (90 tests passing on emulators, CI green); live scan verified end to end with a real receipt before shutdown.
+- Follow-up: `current-state.md` and the backend tracker still describe only slices 00-01 and need a refresh.
